@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Salesforce Account Team | USG Water Solutions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #BDE3F5 0%, #A2D4EE 50%, #C8ECF9 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Cloud decorations */
+    .cloud {
+      position: fixed;
+      border-radius: 50%;
+      background: white;
+      opacity: 0.45;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+    .c1 { width: 340px; height: 140px; top: 5%; left: -60px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+    .c2 { width: 220px; height: 100px; top: 2%; left: 14%; }
+    .c3 { width: 280px; height: 120px; top: 8%; right: -20px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+    .c4 { width: 180px; height: 80px;  top: 4%; right: 18%; }
+    .c5 { width: 200px; height: 90px;  bottom: 8%; left: 5%;  }
+    .c6 { width: 260px; height: 110px; bottom: 4%; right: 8%; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+
+    /* Main card */
+    .card {
+      background: white;
+      border-radius: 28px;
+      padding: 52px 48px 48px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .header-left h1 {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #165EA0;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .header-left p {
+      font-size: 0.95rem;
+      color: #4A7FA5;
+      font-weight: 500;
+    }
+    .logos {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logos img { height: 36px; }
+    .logo-divider { width: 1px; height: 32px; background: #E5E7EB; }
+
+    /* Team grid */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 44px;
+    }
+
+    /* Person card */
+    .person {
+      border-radius: 20px;
+      border: 1.5px solid #E5E7EB;
+      padding: 32px 20px 28px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      cursor: default;
+    }
+    .person:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.1);
+      border-color: transparent;
+    }
+
+    /* Avatar */
+    .avatar-wrap {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 50%;
+      display: block;
+    }
+    .avatar-initials {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: white;
+      border-radius: 50%;
+      letter-spacing: -0.02em;
+    }
+    .avatar-ring {
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      pointer-events: none;
+    }
+
+    /* Colors */
+    .hayden .avatar-initials { background: linear-gradient(135deg, #165EA0, #2491EB); }
+    .hayden .avatar-ring     { border-color: #2491EB; }
+    .hayden:hover            { border-color: #2491EB; }
+    .hayden .email-btn       { background: linear-gradient(135deg, #2491EB, #165EA0); }
+    .hayden .role-badge      { background: #EFF8FF; color: #165EA0; }
+
+    .eric .avatar-initials   { background: linear-gradient(135deg, #72BF44, #4A9A1E); }
+    .eric .avatar-ring       { border-color: #72BF44; }
+    .eric:hover              { border-color: #72BF44; }
+    .eric .email-btn         { background: linear-gradient(135deg, #72BF44, #4A9A1E); }
+    .eric .role-badge        { background: #F0FDF4; color: #166534; }
+
+    .justin .avatar-initials  { background: linear-gradient(135deg, #F26641, #D97706); }
+    .justin .avatar-ring      { border-color: #F26641; }
+    .justin:hover             { border-color: #F26641; }
+    .justin .email-btn        { background: linear-gradient(135deg, #F26641, #D97706); }
+    .justin .role-badge       { background: #FFF7ED; color: #9A3412; }
+
+    /* Name + title */
+    .person h2 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #165EA0;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .role-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
+    }
+
+    /* Email button */
+    .email-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 11px 16px;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+    }
+    .email-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .email-btn svg { flex-shrink: 0; }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #E5E7EB, transparent);
+      margin-bottom: 36px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+    }
+    .footer p {
+      font-size: 13px;
+      color: #6B7280;
+      line-height: 1.7;
+    }
+    .footer strong { color: #165EA0; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2491EB;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #2491EB;
+      transition: all 0.2s ease;
+    }
+    .back-link:hover { background: #2491EB; color: white; }
+
+    @media (max-width: 640px) {
+      .team-grid { grid-template-columns: 1fr; }
+      .header-left h1 { font-size: 1.8rem; }
+      .card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cloud decorations -->
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="cloud c4"></div>
+  <div class="cloud c5"></div>
+  <div class="cloud c6"></div>
+
+  <div class="card">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>Your Salesforce<br/>Account Team</h1>
+        <p>Dedicated to USG Water Solutions &amp; Warren Equity Partners</p>
+      </div>
+      <div class="logos">
+        <img src="https://usgwater.com/wp-content/uploads/2023/10/usg-water-logo_color.svg" alt="USG Water Solutions" onerror="this.style.display='none'"/>
+        <div class="logo-divider"></div>
+        <img src="https://wp.sfdcdigital.com/en-us/wp-content/uploads/sites/4/2024/11/logo-salesforce.svg" alt="Salesforce"/>
+      </div>
+    </div>
+
+    <!-- Team grid -->
+    <div class="team-grid">
+
+      <!-- Hayden Florence -->
+      <div class="person hayden">
+        <div class="avatar-wrap">
+          <div class="avatar-initials">H</div>
+          <div class="avatar-ring"></div>
+        </div>
+        <h2>Hayden Florence</h2>
+        <span class="role-badge">Core Account Executive</span>
+        <a href="mailto:hflorence@salesforce.com" class="email-btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          hflorence@salesforce.com
+        </a>
+      </div>
+
+      <!-- Eric Dalton -->
+      <div class="person eric">
+        <div class="avatar-wrap">
+          <div class="avatar-initials">E</div>
+          <div class="avatar-ring"></div>
+        </div>
+        <h2>Eric Dalton</h2>
+        <span class="role-badge">Core Solutions Engineer</span>
+        <a href="mailto:edalton@salesforce.com" class="email-btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          edalton@salesforce.com
+        </a>
+      </div>
+
+      <!-- Justin Earls -->
+      <div class="person justin">
+        <div class="avatar-wrap">
+          <div class="avatar-initials">J</div>
+          <div class="avatar-ring"></div>
+        </div>
+        <h2>Justin Earls</h2>
+        <span class="role-badge">Regional Vice President</span>
+        <a href="mailto:jearls@salesforce.com" class="email-btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          jearls@salesforce.com
+        </a>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Ready to explore how Salesforce can unify USG Water's revenue engine?<br/>
+      <strong>Reach out to any member of the team</strong> — we'll get the right conversation on the calendar.</p>
+      <a href="index.html" class="back-link">
+        ← Back to Executive Deck
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

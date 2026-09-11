@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Executive Summary | USG Water Solutions × Salesforce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:    #2491EB;
+      --dark:    #165EA0;
+      --green:   #72BF44;
+      --orange:  #F26641;
+      --light:   #EFF8FF;
+      --text:    #1A2B3C;
+      --muted:   #4A7FA5;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F8FC;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Print button */
+    .print-bar {
+      background: var(--dark);
+      color: white;
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .print-bar span { font-size: 13px; font-weight: 600; opacity: 0.85; }
+    .print-actions { display: flex; gap: 12px; }
+    .btn-print, .btn-back {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-print { background: var(--blue); color: white; }
+    .btn-back  { background: white; color: var(--dark); }
+    .btn-print:hover, .btn-back:hover { opacity: 0.85; }
+
+    /* Page */
+    .page {
+      max-width: 900px;
+      margin: 36px auto 60px;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--dark) 0%, #1565C0 60%, #0D47A1 100%);
+      color: white;
+      padding: 52px 56px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=60') center/cover;
+      opacity: 0.07;
+    }
+    .hero-inner { position: relative; z-index: 1; }
+    .hero-logos {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .hero-logos img { height: 30px; }
+    .hero-logos .divider-v { width: 1px; height: 28px; background: rgba(255,255,255,0.35); }
+
+    .hero h1 {
+      font-size: 2.15rem;
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: #7DD3FA; }
+    .hero p.subtitle {
+      font-size: 1rem;
+      font-weight: 400;
+      opacity: 0.8;
+      max-width: 560px;
+      line-height: 1.55;
+    }
+    .hero-meta {
+      margin-top: 24px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .meta-pill {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ===== BODY ===== */
+    .body { padding: 48px 56px 52px; }
+
+    /* Stats strip */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: #E8F0F8;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .stat {
+      background: var(--light);
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .stat .val {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--dark);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .stat .val span { color: var(--blue); }
+    .stat .lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+    }
+
+    /* Section */
+    .section { margin-bottom: 44px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-icon svg { width: 20px; height: 20px; stroke: white; }
+    .icon-blue   { background: var(--blue); }
+    .icon-green  { background: var(--green); }
+    .icon-orange { background: var(--orange); }
+    .icon-dark   { background: var(--dark); }
+
+    .section h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -0.01em;
+    }
+    .section .number {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Pillar grid */
+    .pillars {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .pillar {
+      border: 1.5px solid #E5E7EB;
+      border-radius: 14px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pillar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .pillar-blue::before   { background: var(--blue); }
+    .pillar-green::before  { background: var(--green); }
+    .pillar-orange::before { background: var(--orange); }
+    .pillar-dark::before   { background: var(--dark); }
+
+    .pillar-tag {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .pillar-tag.blue   { color: var(--blue); }
+    .pillar-tag.green  { color: #4A9A1E; }
+    .pillar-tag.orange { color: #C2401C; }
+    .pillar-tag.dark   { color: var(--dark); }
+
+    .pillar h3 {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .pillar ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pillar li {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.45;
+      padding-left: 14px;
+      position: relative;
+    }
+    .pillar li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      font-size: 10px;
+      top: 1px;
+      font-weight: 700;
+    }
+    .pillar-blue li::before   { color: var(--blue); }
+    .pillar-green li::before  { color: var(--green); }
+    .pillar-orange li::before { color: var(--orange); }
+    .pillar-dark li::before   { color: var(--dark); }
+
+    .pillar .outcome {
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .pillar-blue .outcome   { background: #EFF8FF; color: var(--dark); }
+    .pillar-green .outcome  { background: #F0FDF4; color: #166534; }
+    .pillar-orange .outcome { background: #FFF7ED; color: #9A3412; }
+    .pillar-dark .outcome   { background: #EFF8FF; color: var(--dark); }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      gap: 0;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      height: 2px;
+      background: linear-gradient(to right, var(--blue), var(--green));
+      z-index: 0;
+    }
+    .phase {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .phase-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: white;
+    }
+    .phase:nth-child(1) .phase-dot { background: var(--blue); }
+    .phase:nth-child(2) .phase-dot { background: var(--dark); }
+    .phase:nth-child(3) .phase-dot { background: var(--green); }
+    .phase h4 { font-size: 12px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .phase .time { font-size: 10px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+    .phase p { font-size: 11px; color: #4B5563; line-height: 1.4; padding: 0 6px; }
+
+    /* PE box */
+    .pe-box {
+      background: linear-gradient(135deg, #F0F7FF, #E8F2FF);
+      border: 1.5px solid #BFDBFE;
+      border-radius: 14px;
+      padding: 24px 24px;
+    }
+    .pe-box h3 {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .pe-box p {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .pe-companies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .company-tag {
+      background: white;
+      border: 1px solid #BFDBFE;
+      color: var(--dark);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, var(--dark), #1565C0);
+      border-radius: 16px;
+      padding: 36px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .cta-text h3 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .cta-text p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: var(--dark);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 13px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .cta-btn:hover { transform: translateY(-2px); opacity: 0.92; }
+
+    /* Divider */
+    .hr { height: 1px; background: #E5E7EB; margin: 40px 0; }
+
+    /* Footer */
+    .footer-note {
+      font-size: 10px;
+      color: #9CA3AF;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      .print-bar { display: none !important; }
+      body { background: white; }
+      .page {
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .pillars { grid-template-columns: 1fr; }
+      .stats-strip { grid-template-columns: 1fr 1fr; }
+      .timeline { flex-direction: column; gap: 20px; }
+      .timeline::before { display: none; }
+      .hero { padding: 36px 28px 32px; }
+      .body { padding: 36px 28px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="print-bar">
+    <span>USG Water Solutions × Salesforce — Executive Summary</span>
+    <div class="print-actions">
+      <a href="index.html" class="btn-back">← Back to Deck</a>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Print / Save PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="hero-logos">
+          <img src="https://usgwater.com/wp-content/uploads/2023/10/usg-water-logo_color.svg" alt="USG Water Solutions" style="filter:brightness(0) invert(1)" onerror="this.style.display='none'"/>
+          <div class="divider-v"></div>
+          <img src="https://wp.sfdcdigital.com/en-us/wp-content/uploads/sites/4/2024/11/logo-salesforce.svg" alt="Salesforce" style="filter:brightness(0) invert(1)"/>
+        </div>
+        <h1>Unified AI &amp; PE <span>Revenue Engine</span></h1>
+        <p class="subtitle">A strategic Salesforce platform proposal for USG Water Solutions and Warren Equity Partners — transforming field operations, revenue attribution, and portfolio visibility.</p>
+        <div class="hero-meta">
+          <span class="meta-pill">Prepared September 2026</span>
+          <span class="meta-pill">Confidential</span>
+          <span class="meta-pill">USG Water Solutions</span>
+          <span class="meta-pill">Warren Equity Partners</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <!-- Stats -->
+      <div class="stats-strip">
+        <div class="stat"><div class="val"><span>38</span>%</div><div class="lbl">Field Revenue at Risk Without Digital Insight</div></div>
+        <div class="stat"><div class="val"><span>$2.4</span>M</div><div class="lbl">Annual Untracked Marketing Attribution Loss</div></div>
+        <div class="stat"><div class="val"><span>11</span>+</div><div class="lbl">WEP Portfolio Companies Ready to Scale</div></div>
+        <div class="stat"><div class="val"><span>60</span>%</div><div class="lbl">Faster Board Reporting with Live Dashboards</div></div>
+      </div>
+
+      <!-- Situation -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="number">The Opportunity</div>
+            <h2>Where USG Water Is Today</h2>
+          </div>
+        </div>
+        <p style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:12px;">
+          USG Water Solutions operates across a high-touch, relationship-driven field service model — but critical revenue signals are siloed across disconnected systems. Field technicians lack real-time customer intelligence. Marketing spend lacks closed-loop attribution. And Warren Equity Partners has no unified, real-time view across its portfolio for board-level reporting.
+        </p>
+        <p style="font-size:13px;color:#374151;line-height:1.7;">
+          Salesforce proposes a unified platform addressing all four of these gaps simultaneously — replacing fragmented tooling with a single AI-powered revenue engine purpose-built for the water treatment and utilities sector.
+        </p>
+      </div>
+
+      <!-- 4 Pillars -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-blue">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="number">Four Strategic Pillars</div>
+            <h2>The Revenue Engine Framework</h2>
+          </div>
+        </div>
+
+        <div class="pillars">
+
+          <div class="pillar pillar-blue">
+            <div class="pillar-tag blue">Pillar 1 — Field Intelligence</div>
+            <h3>Real-Time Field Service Intelligence</h3>
+            <ul>
+              <li>Mobile-first technician app with full account history</li>
+              <li>AI-driven renewal risk alerts before every site visit</li>
+              <li>Automated post-service follow-up and upsell prompts</li>
+              <li>Works offline across remote industrial sites</li>
+            </ul>
+            <div class="outcome">Target: 25% reduction in field revenue leakage</div>
+          </div>
+
+          <div class="pillar pillar-green">
+            <div class="pillar-tag green">Pillar 2 — Claude AI → Agentforce</div>
+            <h3>Autonomous AI Sales &amp; Service Agents</h3>
+            <ul>
+              <li>AI agents handle routine service requests end-to-end</li>
+              <li>Predictive maintenance alerts via sensor data integration</li>
+              <li>Claude AI-powered proposal and quote generation</li>
+              <li>Einstein Trust Layer ensures data never trains third-party models</li>
+            </ul>
+            <div class="outcome">Target: 40% reduction in manual rep administrative time</div>
+          </div>
+
+          <div class="pillar pillar-orange">
+            <div class="pillar-tag orange">Pillar 3 — Marketing Attribution</div>
+            <h3>Closed-Loop Revenue Attribution</h3>
+            <ul>
+              <li>Full journey tracking from first touch to closed deal</li>
+              <li>UTM + CRM data unified in Salesforce Data Cloud</li>
+              <li>Real-time dashboard: CAC, LTV, and channel ROI by territory</li>
+              <li>Automated multi-touch attribution across all campaigns</li>
+            </ul>
+            <div class="outcome">Target: 100% visibility on $2.4M+ in untracked revenue influence</div>
+          </div>
+
+          <div class="pillar pillar-dark">
+            <div class="pillar-tag dark">Pillar 4 — PE Board Visibility</div>
+            <h3>Portfolio-Level Executive Dashboards</h3>
+            <ul>
+              <li>Single Warren Equity Partners command center across all 11+ companies</li>
+              <li>Standardized KPIs: ARR, NRR, Pipeline, and CAC by portfolio company</li>
+              <li>Automated board-ready reporting on a configurable cadence</li>
+              <li>M&amp;A readiness scores and comparable benchmarks</li>
+            </ul>
+            <div class="outcome">Target: 60% faster board reporting cycle, 100% portfolio coverage</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- PE Context -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-dark">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="number">Private Equity Context</div>
+            <h2>Warren Equity Partners Portfolio Impact</h2>
+          </div>
+        </div>
+        <div class="pe-box">
+          <h3>A Repeatable Revenue Infrastructure Across the Portfolio</h3>
+          <p>USG Water Solutions represents the anchor deployment for a Salesforce platform that can scale across all Warren Equity Partners portfolio companies. A standardized Salesforce instance creates repeatable value: consistent revenue processes, unified data standards, and executive visibility that increases enterprise valuation at exit.</p>
+          <div class="pe-companies">
+            <span class="company-tag">USG Water Solutions</span>
+            <span class="company-tag">Hawkins Water Tech</span>
+            <span class="company-tag">Clearwater Systems</span>
+            <span class="company-tag">WaterLogic SE</span>
+            <span class="company-tag">Aqua-Pure Industrial</span>
+            <span class="company-tag">+ 6 Additional Portfolio Cos.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-green">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="number">Proposed Roadmap</div>
+            <h2>30 / 60 / 90-Day Path Forward</h2>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="phase">
+            <div class="phase-dot">1</div>
+            <h4>Architect Review</h4>
+            <div class="time">Days 0–30</div>
+            <p>Technical discovery session, data mapping, and ROI modeling specific to USG Water operations</p>
+          </div>
+          <div class="phase">
+            <div class="phase-dot">2</div>
+            <h4>Proof of Concept</h4>
+            <div class="time">Days 30–60</div>
+            <p>Field Intelligence pilot with 10 technicians, live Dashboard for one WEP portfolio company</p>
+          </div>
+          <div class="phase">
+            <div class="phase-dot">3</div>
+            <h4>Full Deployment</h4>
+            <div class="time">Days 60–90</div>
+            <p>Platform-wide rollout, Agentforce activation, and portfolio-wide board reporting go-live</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- CTA -->
+      <div class="cta">
+        <div class="cta-text">
+          <h3>Ready to Schedule the Architect Review?</h3>
+          <p>Reach out to your Salesforce account team to set a date for a live architecture and ROI session.</p>
+        </div>
+        <a href="team.html" class="cta-btn">
+          Meet the Team →
+        </a>
+      </div>
+
+      <div class="hr"></div>
+
+      <p class="footer-note">
+        This document is prepared exclusively for USG Water Solutions and Warren Equity Partners. All projections are estimates based on industry benchmarks and are subject to formal scoping and agreement. Salesforce, Einstein, Agentforce, and Data Cloud are registered trademarks of Salesforce, Inc. © 2026 Salesforce, Inc. All rights reserved.
+      </p>
+
+    </div>
+  </div>
+
+</body>
+</html>

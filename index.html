@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USG Water Solutions: Unified AI & PE Revenue Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      background: #0B2545;
+    }
+
+    /* ── Slide container ── */
+    .slide {
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar nav ── */
+    #sidebar {
+      position: fixed;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    .nav-item { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 10px; cursor: pointer; }
+    .nav-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: 1.5px solid rgba(255,255,255,0.4);
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    .nav-dot.active { background: #00A1E0; border-color: #00A1E0; transform: scale(1.4); }
+    .nav-dot.visited { background: rgba(0,161,224,0.5); border-color: rgba(0,161,224,0.6); }
+    .nav-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+      color: white; background: rgba(11,37,69,0.92);
+      padding: 3px 9px; border-radius: 4px;
+      opacity: 0; transform: translateX(6px);
+      transition: all 0.25s ease; pointer-events: none;
+      white-space: nowrap; border: 1px solid rgba(255,255,255,0.12);
+    }
+    .nav-item:hover .nav-label { opacity: 1; transform: translateX(0); }
+
+    /* ── Keyframe animations ── */
+    @keyframes fadeInUp    { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+    @keyframes slideLeft   { from { opacity:0; transform:translateX(-36px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideRight  { from { opacity:0; transform:translateX(36px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes pulseSlow   { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    @keyframes bounce      { 0%,100% { transform:translateY(0); } 50% { transform:translateY(9px); } }
+    @keyframes flowDot     { 0% { left:-8%; } 100% { left:108%; } }
+    @keyframes countUp     { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes shimmer     { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes expandWidth { from { width:0; } to { width:var(--target-width); } }
+    @keyframes rotatePulse { 0%,100% { transform:rotate(0deg) scale(1); } 50% { transform:rotate(5deg) scale(1.02); } }
+
+    .anim-fiu   { animation: fadeInUp  0.65s ease both; }
+    .anim-fi    { animation: fadeIn    0.65s ease both; }
+    .anim-sl    { animation: slideLeft 0.65s ease both; }
+    .anim-sr    { animation: slideRight 0.65s ease both; }
+
+    .d-1 { animation-delay: 0.08s; } .d-2 { animation-delay: 0.18s; }
+    .d-3 { animation-delay: 0.28s; } .d-4 { animation-delay: 0.38s; }
+    .d-5 { animation-delay: 0.50s; } .d-6 { animation-delay: 0.62s; }
+
+    .scroll-bounce { animation: bounce 2.2s ease-in-out infinite; }
+
+    /* ── Flow diagram ── */
+    .flow-step {
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+      border: 2px solid transparent;
+    }
+    .flow-step.active {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0,161,224,0.28);
+      border-color: #00A1E0;
+    }
+    .flow-step.done { border-color: rgba(5,150,105,0.6); }
+
+    .flow-connector { position: relative; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden; margin: 0 -2px; }
+    .flow-connector-fill {
+      position: absolute; left: 0; top: 0; height: 100%;
+      background: linear-gradient(90deg, #1363DF, #00A1E0);
+      width: 0; transition: width 0.6s ease;
+    }
+    .flow-connector.done .flow-connector-fill { width: 100%; }
+    .flow-dot {
+      position: absolute; top: 50%; width: 10px; height: 10px;
+      background: #00A1E0; border-radius: 50%;
+      transform: translateY(-50%);
+      animation: flowDot 1.5s ease-in-out infinite;
+      opacity: 0;
+    }
+    .flow-connector.active .flow-dot { opacity: 1; }
+    .flow-step-detail { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease; opacity: 0; }
+    .flow-step-detail.visible { max-height: 300px; opacity: 1; }
+
+    /* ── Architecture diagram ── */
+    .arch-layer {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: default;
+    }
+    .arch-layer:hover { transform: translateX(5px); }
+    .arch-arrow {
+      display: flex; justify-content: center; align-items: center;
+      height: 28px; position: relative;
+    }
+    .arch-arrow-line {
+      width: 2px; height: 100%; background: linear-gradient(to bottom, rgba(99,102,241,0.4), rgba(0,161,224,0.4));
+      position: relative; overflow: hidden;
+    }
+    .arch-arrow-travel {
+      position: absolute; left: 50%; top: 0; width: 2px; height: 10px;
+      background: #00A1E0; border-radius: 1px;
+      animation: flowDot 1.8s ease-in-out infinite;
+    }
+
+    /* ── Dashboard ── */
+    .dash-tab {
+      cursor: pointer; transition: all 0.25s ease;
+      border-bottom: 2px solid transparent;
+    }
+    .dash-tab.active { border-bottom-color: #00A1E0; color: #00A1E0; }
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; }
+
+    .risk-row { transition: background 0.2s ease; }
+    .risk-row:hover { background: rgba(0,161,224,0.06); }
+
+    /* ── Portfolio cards ── */
+    .port-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .port-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.18);
+    }
+
+    /* ── Progress bars ── */
+    .prog-bar-fill { animation: expandWidth 1.4s ease forwards; animation-delay: 0.3s; }
+
+    /* ── Utility ── */
+    .gradient-text {
+      background: linear-gradient(135deg, #00A1E0 0%, #1363DF 50%, #7C3AED 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .cyan-line { width: 48px; height: 3px; background: linear-gradient(90deg,#00A1E0,#1363DF); border-radius: 2px; }
+
+    /* Pill badge */
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 9999px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+
+    /* Metric counter */
+    .big-metric {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900;
+      line-height: 1; letter-spacing: -0.02em;
+    }
+
+    /* Glassmorphism card */
+    .glass {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #0B2545; }
+    ::-webkit-scrollbar-thumb { background: #1363DF; border-radius: 3px; }
+
+    /* IntersectionObserver reveal */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .reveal-left { opacity: 0; transform: translateX(-24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+    .reveal-right { opacity: 0; transform: translateX(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* Timeline */
+    .timeline-line { width: 2px; background: linear-gradient(to bottom, #1363DF, rgba(19,99,223,0.15)); }
+    .timeline-node { width: 36px; height: 36px; }
+
+    /* Tag pill */
+    .tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  FIXED SIDEBAR NAVIGATION                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<nav id="sidebar" aria-label="Slide navigation"></nav>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 1 — HERO                                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-1" class="slide" style="background: linear-gradient(135deg, #050F1F 0%, #0B2545 40%, #0F3460 70%, #1363DF 100%); padding: 80px 60px 60px;">
+
+  <!-- Subtle grid overlay -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,161,224,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,161,224,0.04) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;"></div>
+
+  <!-- Floating orbs -->
+  <div style="position:absolute;top:15%;right:10%;width:400px;height:400px;background:radial-gradient(circle,rgba(19,99,223,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>
+  <div style="position:absolute;bottom:20%;left:5%;width:300px;height:300px;background:radial-gradient(circle,rgba(0,161,224,0.12) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>
+
+  <div class="relative z-10 max-w-6xl mx-auto w-full flex flex-col items-center text-center">
+
+    <!-- Confidentiality badge -->
+    <div class="anim-fi mb-8">
+      <span class="pill glass text-white" style="background:rgba(255,255,255,0.06);">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400" style="animation:pulseSlow 2s infinite;"></span>
+        CONFIDENTIAL — Warren Equity Partners · USG Water Solutions
+      </span>
+    </div>
+
+    <!-- Logos row -->
+    <div class="anim-fi d-1 flex items-center justify-center gap-6 mb-10">
+      <!-- USG Water Logo text -->
+      <div class="flex items-center gap-3">
+        <div style="width:42px;height:42px;background:linear-gradient(135deg,#00A1E0,#1363DF);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 4 8 4 14a8 8 0 0016 0C20 8 12 2 12 2z" fill="white" opacity="0.9"/><path d="M12 8C12 8 8 11 8 14a4 4 0 008 0C16 11 12 8 12 8z" fill="white" opacity="0.5"/></svg>
+        </div>
+        <span style="color:white;font-weight:800;font-size:1.1rem;letter-spacing:-0.01em;">USG Water Solutions</span>
+      </div>
+      <div style="width:1px;height:32px;background:rgba(255,255,255,0.2);"></div>
+      <!-- Salesforce logo text -->
+      <div class="flex items-center gap-3">
+        <div style="width:42px;height:42px;background:linear-gradient(135deg,#00A1E0,#007EC5);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M9.7 19.5c-.5.3-1.1.5-1.7.5-1.9 0-3.4-1.5-3.4-3.4 0-.4.1-.8.2-1.2C3.4 14.8 2.5 13.4 2.5 12c0-1.7 1-3.2 2.5-3.8C5.2 7.8 5.5 7.3 5.9 7c.8-.7 1.8-1 2.9-1 .8 0 1.6.2 2.2.6.7-1.5 2.3-2.6 4.1-2.6 2.5 0 4.5 2 4.5 4.5v.2c1.4.5 2.4 1.9 2.4 3.4 0 2-1.6 3.6-3.6 3.6h-8.7z"/></svg>
+        </div>
+        <span style="color:white;font-weight:800;font-size:1.1rem;letter-spacing:-0.01em;">Salesforce</span>
+      </div>
+    </div>
+
+    <!-- Main headline -->
+    <h1 class="anim-fiu d-2" style="font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;color:white;line-height:1.05;letter-spacing:-0.03em;margin-bottom:20px;">
+      Unified AI &amp; PE<br/>
+      <span class="gradient-text">Revenue Engine</span>
+    </h1>
+
+    <p class="anim-fiu d-3" style="font-size:1.2rem;color:rgba(255,255,255,0.72);max-width:640px;line-height:1.65;margin-bottom:48px;">
+      How Salesforce converts 130+ field crews, stranded Claude AI insights, broken attribution, and board-level blind spots into a single, governed revenue machine across 48 states.
+    </p>
+
+    <!-- Salesforce product badges -->
+    <div class="anim-fiu d-4 flex flex-wrap justify-center gap-3 mb-14">
+      <span class="pill" style="background:rgba(0,112,210,0.25);color:#7EC8F4;border:1px solid rgba(0,161,224,0.3);">Sales Cloud</span>
+      <span class="pill" style="background:rgba(82,43,143,0.25);color:#C4A8F5;border:1px solid rgba(130,80,200,0.3);">Marketing Cloud Growth</span>
+      <span class="pill" style="background:rgba(0,130,80,0.25);color:#6EE7B7;border:1px solid rgba(0,160,100,0.3);">Field Service</span>
+      <span class="pill" style="background:rgba(6,80,200,0.25);color:#93C5FD;border:1px solid rgba(50,120,220,0.3);">Data Cloud</span>
+      <span class="pill" style="background:rgba(180,60,40,0.25);color:#FCA5A5;border:1px solid rgba(200,80,60,0.3);">Agentforce</span>
+      <span class="pill" style="background:rgba(180,120,0,0.25);color:#FDE68A;border:1px solid rgba(200,140,0,0.3);">Tableau</span>
+    </div>
+
+    <!-- Key stats row -->
+    <div class="anim-fiu d-5 glass rounded-2xl p-6 flex flex-wrap justify-center gap-10 mb-14 w-full max-w-3xl">
+      <div class="text-center">
+        <div class="big-metric" style="color:#00A1E0;">130+</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">Field Crews</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div class="text-center">
+        <div class="big-metric" style="color:#A78BFA;">48</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">States</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div class="text-center">
+        <div class="big-metric" style="color:#34D399;">150+</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">Annual Events</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+      <div class="text-center">
+        <div class="big-metric" style="color:#FBBF24;">11</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;">WEP Portfolio Cos.</div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-bounce anim-fi d-6" style="color:rgba(255,255,255,0.45);display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">Scroll to Explore</span>
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 2 — FOUR REVENUE FRICTIONS                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-2" class="slide" style="background:#F0F4F8;padding:80px 60px;">
+  <div class="max-w-6xl mx-auto w-full">
+
+    <div class="reveal mb-3">
+      <span class="pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;">The Problem</span>
+    </div>
+    <h2 class="reveal" style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#0B2545;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+      Four Revenue Leaks<br/><span style="color:#1363DF;">Draining Growth Potential</span>
+    </h2>
+    <div class="cyan-line reveal" style="margin-bottom:14px;"></div>
+    <p class="reveal" style="color:#64748B;font-size:1rem;max-width:560px;line-height:1.7;margin-bottom:48px;">
+      USG Water's commercial operations are leaving measurable revenue on the table across four compounding friction points — each resolvable with Salesforce.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Pain 1 -->
+      <div class="reveal bg-white rounded-2xl p-7 border-l-4" style="border-left-color:#DC2626;box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+        <div class="flex items-start gap-4 mb-4">
+          <div style="width:48px;height:48px;background:#FEF2F2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M17 20H7a2 2 0 01-2-2V9a2 2 0 012-2h1V5a4 4 0 018 0v2h1a2 2 0 012 2v9a2 2 0 01-2 2z" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="14" r="2" stroke="#DC2626" stroke-width="1.8"/></svg>
+          </div>
+          <div>
+            <span class="tag" style="background:#FEF2F2;color:#DC2626;">Field Intelligence Gap</span>
+            <h3 style="font-size:1.15rem;font-weight:800;color:#0B2545;margin-top:6px;line-height:1.3;">130+ Crews. Zero Revenue Tracking.</h3>
+          </div>
+        </div>
+        <p style="color:#64748B;font-size:0.9rem;line-height:1.65;margin-bottom:16px;">
+          Field crews email ad-hoc upsell observations (crumbling concrete, degraded equipment) from 48 states. Zero prospect creation, zero attribution, zero pipeline provenance — invisible cross-sell revenue.
+        </p>
+        <div style="display:flex;gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#DC2626;">$0</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Tracked Cross-Sell</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#DC2626;">0%</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">AE Follow-Up SLA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pain 2 -->
+      <div class="reveal d-1 bg-white rounded-2xl p-7 border-l-4" style="border-left-color:#7C3AED;box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+        <div class="flex items-start gap-4 mb-4">
+          <div style="width:48px;height:48px;background:#F5F3FF;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="#7C3AED" stroke-width="1.8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" stroke="#7C3AED" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <span class="tag" style="background:#F5F3FF;color:#7C3AED;">AI Investment Stranded</span>
+            <h3 style="font-size:1.15rem;font-weight:800;color:#0B2545;margin-top:6px;line-height:1.3;">Claude Insights in Isolated Scripts</h3>
+          </div>
+        </div>
+        <p style="color:#64748B;font-size:0.9rem;line-height:1.65;margin-bottom:16px;">
+          USG uses Claude Enterprise for Snowflake queries and digital twin asset modeling — extending renovation cycles from 5→7 years. But these AI insights live in prompt-driven scripts, never triggering sales proposals or dispatch actions automatically.
+        </p>
+        <div style="display:flex;gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#7C3AED;">5→7yr</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Cycle Extended</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#7C3AED;">0</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Automated Actions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pain 3 -->
+      <div class="reveal d-2 bg-white rounded-2xl p-7 border-l-4" style="border-left-color:#D97706;box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+        <div class="flex items-start gap-4 mb-4">
+          <div style="width:48px;height:48px;background:#FFFBEB;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <span class="tag" style="background:#FFFBEB;color:#92400E;">Attribution Void</span>
+            <h3 style="font-size:1.15rem;font-weight:800;color:#0B2545;margin-top:6px;line-height:1.3;">Broken HubSpot → Oracle Handoff</h3>
+          </div>
+        </div>
+        <p style="color:#64748B;font-size:0.9rem;line-height:1.65;margin-bottom:16px;">
+          150+ annual events are manually scored by hand. Attribution data dissolves at the HubSpot-to-Oracle boundary. Municipal RFP response tracking is fragmented — leadership cannot see win/loss velocity in real time.
+        </p>
+        <div style="display:flex;gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#D97706;">150+</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Events Manual</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#D97706;">0%</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Attribution Closed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pain 4 -->
+      <div class="reveal d-3 bg-white rounded-2xl p-7 border-l-4" style="border-left-color:#0369A1;box-shadow:0 2px 16px rgba(0,0,0,0.07);">
+        <div class="flex items-start gap-4 mb-4">
+          <div style="width:48px;height:48px;background:#F0F9FF;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#0369A1" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#0369A1" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#0369A1" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#0369A1" stroke-width="1.8"/></svg>
+          </div>
+          <div>
+            <span class="tag" style="background:#F0F9FF;color:#0369A1;">Board Visibility Gap</span>
+            <h3 style="font-size:1.15rem;font-weight:800;color:#0B2545;margin-top:6px;line-height:1.3;">No Real-Time Board Intelligence</h3>
+          </div>
+        </div>
+        <p style="color:#64748B;font-size:0.9rem;line-height:1.65;margin-bottom:16px;">
+          Warren Equity demands real-time visibility into regional pipelines, top 10 municipal renewal risks, and RFP response speeds — currently requiring manual stitching across disparate BI tools. No M&A-ready reporting standard exists.
+        </p>
+        <div style="display:flex;gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#0369A1;">4+</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Siloed BI Tools</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.5rem;font-weight:900;color:#0369A1;">Days</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:600;text-transform:uppercase;">Report Lag</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 3 — PLATFORM OVERVIEW                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-3" class="slide" style="background:linear-gradient(160deg,#0B2545 0%,#0F3460 60%,#1a1a3e 100%);padding:80px 60px;">
+
+  <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(0,161,224,0.08) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
+
+  <div class="max-w-6xl mx-auto w-full relative z-10">
+    <div class="reveal mb-3">
+      <span class="pill" style="background:rgba(0,161,224,0.15);color:#7EC8F4;border:1px solid rgba(0,161,224,0.25);">The Platform</span>
+    </div>
+    <h2 class="reveal" style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:white;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+      One Platform. Six Products.<br/><span style="color:#00A1E0;">One Revenue Engine.</span>
+    </h2>
+    <div class="cyan-line reveal" style="margin-bottom:12px;"></div>
+    <p class="reveal" style="color:rgba(255,255,255,0.6);font-size:1rem;max-width:520px;line-height:1.7;margin-bottom:48px;">
+      Every Salesforce product maps directly to a USG Water friction point — on a single data model, with a single Trust Layer.
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <!-- Sales Cloud -->
+      <div class="reveal glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300" style="cursor:default;">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#0070D2,#00A1E0);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M16 8a4 4 0 11-8 0 4 4 0 018 0zM12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z" fill="white"/></svg>
+        </div>
+        <h3 style="color:white;font-size:1rem;font-weight:800;margin-bottom:6px;">Sales Cloud</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Auto-created Opportunities from field observations, AE routing, SLA enforcement, and Opportunity Team attribution for commission tracking.</p>
+        <div class="mt-4">
+          <span class="tag" style="background:rgba(0,112,210,0.2);color:#7EC8F4;">Field Cross-Sell → Pipeline</span>
+        </div>
+      </div>
+
+      <!-- MCG -->
+      <div class="reveal d-1 glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z" stroke="white" stroke-width="1.8"/><path d="M12 3v18M3 8l9 5 9-5" stroke="white" stroke-width="1.8"/></svg>
+        </div>
+        <h3 style="color:white;font-size:1rem;font-weight:800;margin-bottom:6px;">Marketing Cloud Growth</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Natively built on core CRM objects — eliminates the HubSpot → Oracle data loss. Automated campaign influence rollups and event lead scoring.</p>
+        <div class="mt-4">
+          <span class="tag" style="background:rgba(124,58,237,0.2);color:#C4A8F5;">Attribution → Closed Loop</span>
+        </div>
+      </div>
+
+      <!-- Field Service -->
+      <div class="reveal d-2 glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#059669,#34D399);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="white" stroke-width="1.8"/><path d="M9 7h6M9 11h6M9 15h4" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3 style="color:white;font-size:1rem;font-weight:800;margin-bottom:6px;">Field Service</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Mobile photo/note logging during live site visits. Auto-dispatch work orders triggered by Agentforce AI signals. Full crew-to-revenue traceability.</p>
+        <div class="mt-4">
+          <span class="tag" style="background:rgba(5,150,105,0.2);color:#6EE7B7;">Field Visit → Revenue Funnel</span>
+        </div>
+      </div>
+
+      <!-- Data Cloud -->
+      <div class="reveal d-3 glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#0369A1,#38BDF8);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="white" stroke-width="1.8"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" stroke="white" stroke-width="1.8"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke="white" stroke-width="1.8"/></svg>
+        </div>
+        <h3 style="color:white;font-size:1rem;font-weight:800;margin-bottom:6px;">Data Cloud</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Zero-Copy Federation with Snowflake — unifies asset telemetry, service history, and CRM data without manual duplication. Feeds Agentforce and Tableau in real time.</p>
+        <div class="mt-4">
+          <span class="tag" style="background:rgba(3,105,161,0.2);color:#93C5FD;">Snowflake ↔ CRM Unified</span>
+        </div>
+      </div>
+
+      <!-- Agentforce -->
+      <div class="reveal d-4 glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#DC2626,#F87171);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3 style="color:white;font-size:1rem;font-weight:800;margin-bottom:6px;">Agentforce</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Model-agnostic AI orchestration via the Salesforce Trust Layer on AWS Bedrock. Ingests Claude asset-health scores → triggers proposals, work orders, and contract logs automatically.</p>
+        <div class="mt-4">
+          <span class="tag" style="background:rgba(220,38,38,0.2);color:#FCA5A5;">Claude AI → Automated Actions</span>
+        </div>
+      </div>
+
+      <!-- Tableau -->
+      <div class="reveal d-5 glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#D97706,#FBBF24);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 20V10M8 20V4M12 20v-8M16 20V6M20 20v-4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 style="color:white;font-size:1rem;font-weight:800;margin-bottom:6px;">Tableau</h3>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Board-level dashboards powered by Data Cloud — blends CRM pipeline, Field Service dispatch, and Snowflake asset data into one governed view for Warren Equity reporting.</p>
+        <div class="mt-4">
+          <span class="tag" style="background:rgba(217,119,6,0.2);color:#FDE68A;">PE Board → Live Intelligence</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 4 — FIELD INTELLIGENCE ENGINE                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-4" class="slide" style="background:#F8FAFC;padding:80px 60px;">
+  <div class="max-w-6xl mx-auto w-full">
+
+    <div class="flex flex-col lg:flex-row gap-12 items-start">
+
+      <!-- Left: Content -->
+      <div class="lg:w-5/12">
+        <div class="reveal mb-3">
+          <span class="pill" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;">Pillar 1</span>
+        </div>
+        <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:#0B2545;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+          Field Crew Intelligence<br/><span style="color:#059669;">→ Tracked Revenue</span>
+        </h2>
+        <div class="cyan-line reveal" style="margin-bottom:16px;"></div>
+
+        <div class="reveal bg-red-50 border border-red-100 rounded-xl p-5 mb-6">
+          <p style="font-size:0.85rem;font-weight:700;color:#DC2626;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Current State</p>
+          <p style="font-size:0.9rem;color:#7F1D1D;line-height:1.65;">A field tech inspects a tank and notices crumbling concrete on a nearby clarifier. He emails his supervisor. The observation goes <strong>nowhere</strong> — no prospect, no opportunity, no attribution, no follow-up SLA.</p>
+        </div>
+
+        <div class="reveal space-y-4 mb-6">
+          <div class="flex items-start gap-3">
+            <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <p style="font-size:0.875rem;color:#374151;line-height:1.6;"><strong>Field Service Mobile</strong> enables on-site photo + note logging during any scheduled visit, geo-tagged to the account.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <p style="font-size:0.875rem;color:#374151;line-height:1.6;"><strong>Flow Assignment Rules</strong> auto-create an Opportunity attached to the parent Municipal Account and route it to the territory AE within minutes.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <p style="font-size:0.875rem;color:#374151;line-height:1.6;"><strong>Time-Based Flow Actions</strong> enforce AE follow-up SLAs with automated manager escalations if not actioned within threshold.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            <p style="font-size:0.875rem;color:#374151;line-height:1.6;"><strong>Opportunity Team Member</strong> records preserve field technician attribution for recognition and incentive compensation.</p>
+          </div>
+        </div>
+
+        <!-- PE ROI callout -->
+        <div class="reveal glass rounded-xl p-5" style="background:linear-gradient(135deg,#0B2545,#0F3460);border:1px solid rgba(0,161,224,0.25);">
+          <p style="font-size:10px;font-weight:700;color:#00A1E0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">PE Board ROI</p>
+          <p style="font-size:0.875rem;color:rgba(255,255,255,0.8);line-height:1.65;">Converts informal field observations into a trackable revenue funnel — complete pipeline provenance down to individual field visits across all 48 states. No more flying blind in expansion markets.</p>
+        </div>
+      </div>
+
+      <!-- Right: Interactive Flow Diagram -->
+      <div class="lg:w-7/12">
+        <div class="reveal">
+          <div class="flex items-center justify-between mb-5">
+            <h3 style="font-size:0.9rem;font-weight:700;color:#374151;letter-spacing:0.05em;text-transform:uppercase;">Interactive Data Flow — Click to Advance</h3>
+            <div id="flow-progress" style="font-size:12px;font-weight:700;color:#1363DF;background:#EBF4FF;padding:4px 12px;border-radius:99px;">Step 1 of 3</div>
+          </div>
+
+          <!-- Flow steps -->
+          <div class="flex items-stretch gap-0" style="position:relative;">
+
+            <!-- Step 1 -->
+            <div id="flow-step-1" class="flow-step active bg-white rounded-2xl p-5 flex-1 cursor-pointer" onclick="advanceFlow()" style="box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+              <div style="width:32px;height:32px;background:linear-gradient(135deg,#059669,#34D399);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+                <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4" stroke="#059669" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div style="font-size:9px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Step 1</div>
+              <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;margin-bottom:6px;line-height:1.3;">Field Service Mobile Capture</h4>
+              <p style="font-size:0.78rem;color:#6B7280;line-height:1.55;">Tech logs photo + structured note during live visit. Geo-tagged to parent Account.</p>
+              <div id="flow-detail-1" class="flow-step-detail visible mt-4 pt-4 border-t border-gray-100">
+                <div class="space-y-2">
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#059669;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Photo of crumbling concrete clarifier</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#059669;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Condition code + urgency tag selected</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#059669;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Linked to Houston MUD #1 Account record</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#059669;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Trigger fires → Flow Orchestrator</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector 1 -->
+            <div class="flex flex-col items-center justify-center px-1" style="min-width:36px;position:relative;">
+              <div id="flow-conn-1" class="flow-connector" style="width:100%;position:relative;">
+                <div class="flow-connector-fill"></div>
+                <div class="flow-dot"></div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-top:-1px;"><path d="M9 18l6-6-6-6" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="flow-step-2" class="flow-step bg-white rounded-2xl p-5 flex-1 cursor-pointer" onclick="advanceFlow()" style="box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+              <div style="width:32px;height:32px;background:linear-gradient(135deg,#1363DF,#00A1E0);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;opacity:0.4;transition:opacity 0.4s;" id="flow-icon-2">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white"/></svg>
+              </div>
+              <div style="font-size:9px;font-weight:800;color:#1363DF;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Step 2</div>
+              <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;margin-bottom:6px;line-height:1.3;">Flow Orchestrator &amp; SLA Action</h4>
+              <p style="font-size:0.78rem;color:#6B7280;line-height:1.55;">Opportunity auto-created, AE assigned, SLA timer starts, escalation scheduled.</p>
+              <div id="flow-detail-2" class="flow-step-detail mt-4 pt-4 border-t border-gray-100">
+                <div class="space-y-2">
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#1363DF;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Opportunity created: "Clarifier Rehab - Houston MUD"</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#1363DF;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Stage: Qualified → Amount: TBD</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#1363DF;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">48-hr AE follow-up SLA timer begins</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#1363DF;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Manager escalation queued at 72 hrs if no action</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector 2 -->
+            <div class="flex flex-col items-center justify-center px-1" style="min-width:36px;position:relative;">
+              <div id="flow-conn-2" class="flow-connector" style="width:100%;position:relative;">
+                <div class="flow-connector-fill"></div>
+                <div class="flow-dot"></div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin-top:-1px;"><path d="M9 18l6-6-6-6" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+
+            <!-- Step 3 -->
+            <div id="flow-step-3" class="flow-step bg-white rounded-2xl p-5 flex-1 cursor-pointer" onclick="advanceFlow()" style="box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+              <div style="width:32px;height:32px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;opacity:0.4;transition:opacity 0.4s;" id="flow-icon-3">
+                <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+              </div>
+              <div style="font-size:9px;font-weight:800;color:#7C3AED;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Step 3</div>
+              <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;margin-bottom:6px;line-height:1.3;">AE Opportunity &amp; Team Attribution</h4>
+              <p style="font-size:0.78rem;color:#6B7280;line-height:1.55;">AE owns opportunity. Tech gets Opp Team credit. Full revenue provenance established.</p>
+              <div id="flow-detail-3" class="flow-step-detail mt-4 pt-4 border-t border-gray-100">
+                <div class="space-y-2">
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#7C3AED;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">AE receives push notification + task</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#7C3AED;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Field tech added as Opp Team Member (Originator)</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#7C3AED;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Pipeline attributed to originating work order</span>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <span style="width:6px;height:6px;background:#7C3AED;border-radius:50%;flex-shrink:0;"></span>
+                    <span style="font-size:0.75rem;color:#374151;">Board can see: field visit → $1.2M pipeline</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end flex -->
+
+          <!-- Controls -->
+          <div class="flex items-center justify-between mt-6">
+            <button onclick="resetFlow()" style="font-size:12px;font-weight:600;color:#9CA3AF;background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:8px;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='none'">↺ Reset</button>
+            <button onclick="advanceFlow()" id="flow-next-btn" style="font-size:13px;font-weight:700;color:white;background:linear-gradient(135deg,#1363DF,#00A1E0);border:none;cursor:pointer;padding:10px 24px;border-radius:10px;display:flex;align-items:center;gap:8px;">
+              Next Step →
+            </button>
+          </div>
+
+          <!-- Completion banner -->
+          <div id="flow-complete" style="display:none;" class="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <p style="font-size:0.875rem;font-weight:700;color:#065F46;">✓ Full loop complete — field observation becomes tracked pipeline in &lt;2 minutes</p>
+          </div>
+        </div><!-- reveal -->
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 5 — MARKETING ATTRIBUTION                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-5" class="slide" style="background:linear-gradient(160deg,#1a1a3e 0%,#0B2545 50%,#0F3460 100%);padding:80px 60px;">
+
+  <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(124,58,237,0.07) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;"></div>
+
+  <div class="max-w-6xl mx-auto w-full relative z-10">
+    <div class="reveal mb-3">
+      <span class="pill" style="background:rgba(124,58,237,0.2);color:#C4A8F5;border:1px solid rgba(124,58,237,0.3);">Pillar 2</span>
+    </div>
+    <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:white;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+      Closed-Loop Marketing Attribution<br/><span style="color:#A78BFA;">Across 150+ Annual Events</span>
+    </h2>
+    <div class="cyan-line reveal" style="background:linear-gradient(90deg,#A78BFA,#7C3AED);margin-bottom:40px;"></div>
+
+    <!-- Before / After comparison -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+      <!-- Before -->
+      <div class="reveal glass rounded-2xl p-7" style="border:1px solid rgba(220,38,38,0.2);">
+        <div class="flex items-center gap-3 mb-5">
+          <div style="width:36px;height:36px;background:rgba(220,38,38,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" fill="#F87171" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </div>
+          <h3 style="color:white;font-weight:800;font-size:1rem;">Before: Broken Attribution</h3>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(220,38,38,0.1);">
+            <span style="color:#F87171;font-weight:800;font-size:1rem;flex-shrink:0;">✗</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">HubSpot → Oracle handoff</strong> drops contact history, lead scores, and campaign touch data</p>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(220,38,38,0.1);">
+            <span style="color:#F87171;font-weight:800;font-size:1rem;flex-shrink:0;">✗</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">150+ events</strong> manually scored by staff — inconsistent, time-lagged, not tied to CRM pipeline</p>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(220,38,38,0.1);">
+            <span style="color:#F87171;font-weight:800;font-size:1rem;flex-shrink:0;">✗</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">Municipal RFP tracking</strong> fragmented — no consistent stage tracking or win/loss reason codes</p>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(220,38,38,0.1);">
+            <span style="color:#F87171;font-weight:800;font-size:1rem;flex-shrink:0;">✗</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">Zero marketing ROI visibility</strong> — leadership cannot measure which events or campaigns drive closed revenue</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- After -->
+      <div class="reveal d-1 glass rounded-2xl p-7" style="border:1px solid rgba(124,58,237,0.3);">
+        <div class="flex items-center gap-3 mb-5">
+          <div style="width:36px;height:36px;background:rgba(124,58,237,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" fill="#A78BFA" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <h3 style="color:white;font-weight:800;font-size:1rem;">After: Marketing Cloud Growth</h3>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(124,58,237,0.15);">
+            <span style="color:#A78BFA;font-weight:800;font-size:1rem;flex-shrink:0;">✓</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">MCG built on core CRM objects</strong> — zero handoff friction, all marketing data lives natively in Salesforce</p>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(124,58,237,0.15);">
+            <span style="color:#A78BFA;font-weight:800;font-size:1rem;flex-shrink:0;">✓</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">Automated Campaign Influence rollups</strong> track every event attendee touchpoint through Opportunity close</p>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(124,58,237,0.15);">
+            <span style="color:#A78BFA;font-weight:800;font-size:1rem;flex-shrink:0;">✓</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">Flow-automated RFP Opportunity stages</strong> with mandatory win/loss reason codes at every stage transition</p>
+          </div>
+          <div class="flex items-start gap-3 p-3 rounded-lg" style="background:rgba(124,58,237,0.15);">
+            <span style="color:#A78BFA;font-weight:800;font-size:1rem;flex-shrink:0;">✓</span>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.55;"><strong style="color:white;">Real-time win/loss velocity</strong> across all municipal bid cycles visible to leadership in one Tableau view</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom KPI row -->
+    <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass rounded-xl p-5 text-center" style="border:1px solid rgba(124,58,237,0.2);">
+        <div style="font-size:2rem;font-weight:900;color:#A78BFA;">150+</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;">Events Auto-Scored</div>
+      </div>
+      <div class="glass rounded-xl p-5 text-center" style="border:1px solid rgba(124,58,237,0.2);">
+        <div style="font-size:2rem;font-weight:900;color:#A78BFA;">100%</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;">Attribution Captured</div>
+      </div>
+      <div class="glass rounded-xl p-5 text-center" style="border:1px solid rgba(124,58,237,0.2);">
+        <div style="font-size:2rem;font-weight:900;color:#A78BFA;">Live</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;">Win/Loss Visibility</div>
+      </div>
+      <div class="glass rounded-xl p-5 text-center" style="border:1px solid rgba(124,58,237,0.2);">
+        <div style="font-size:2rem;font-weight:900;color:#A78BFA;">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;">Handoff Data Loss</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 6 — AI ARCHITECTURE                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-6" class="slide" style="background:#F0F4F8;padding:80px 60px;">
+  <div class="max-w-6xl mx-auto w-full">
+
+    <div class="flex flex-col lg:flex-row gap-12 items-start">
+
+      <!-- Left -->
+      <div class="lg:w-5/12">
+        <div class="reveal mb-3">
+          <span class="pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;">Pillar 3</span>
+        </div>
+        <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:#0B2545;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+          Enterprise AI Architecture:<br/><span style="color:#D97706;">Claude → Agentforce</span>
+        </h2>
+        <div class="cyan-line reveal" style="background:linear-gradient(90deg,#D97706,#FBBF24);margin-bottom:16px;"></div>
+
+        <div class="reveal bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
+          <p style="font-size:10px;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Operational Pain</p>
+          <p style="font-size:0.875rem;color:#78350F;line-height:1.65;">USG's Claude Enterprise AI assets — Snowflake queries and visual digital twin models that extend renovation cycles from 5→7 years — produce zero automated CRM or dispatch actions. Insights live in isolated scripts.</p>
+        </div>
+
+        <div class="reveal space-y-4 mb-6">
+          <div class="bg-white rounded-xl p-4 border border-gray-100">
+            <p style="font-size:11px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Data Cloud Zero-Copy</p>
+            <p style="font-size:0.83rem;color:#374151;line-height:1.6;">Federates Snowflake asset telemetry and customer data into Salesforce without duplication — one source of truth, governed and real-time.</p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-gray-100">
+            <p style="font-size:11px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Salesforce Trust Layer + AWS Bedrock</p>
+            <p style="font-size:0.83rem;color:#374151;line-height:1.6;">Agentforce operates model-agnostically via the Trust Layer on AWS Bedrock — the same enterprise-grade security stack validated at CrowdStrike, RBC, and Toyota.</p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-gray-100">
+            <p style="font-size:11px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Automated Revenue Actions</p>
+            <p style="font-size:0.83rem;color:#374151;line-height:1.6;">Claude asset-health scores automatically trigger: Sales Cloud proposal drafts, Service Cloud dispatch work orders, and flat-fee contract margin-preservation logs.</p>
+          </div>
+        </div>
+
+        <!-- Eval stage disclaimer -->
+        <div class="reveal rounded-xl p-4" style="background:#F8FAFC;border:1px solid #E5E7EB;">
+          <p style="font-size:10px;font-weight:800;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Compliance Note</p>
+          <p style="font-size:0.78rem;color:#9CA3AF;line-height:1.55;">Presented as evaluation-stage architecture for validation in the October technical review. Subject to Salesforce product roadmap confirmation.</p>
+        </div>
+      </div>
+
+      <!-- Right: Architecture Diagram -->
+      <div class="lg:w-7/12">
+        <div class="reveal">
+          <p style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;">Hover each layer to explore</p>
+
+          <div class="space-y-1">
+
+            <!-- Layer 1: Snowflake -->
+            <div class="arch-layer rounded-2xl p-5" style="background:linear-gradient(135deg,#E8F4FD,#D0E8FA);border:1px solid #BAD8F0;">
+              <div class="flex items-center gap-3">
+                <div style="width:40px;height:40px;background:#29B5E8;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="22" height="22" fill="white" viewBox="0 0 24 24"><path d="M12 2L8 6l4 4-4 4 4 4-4 4h8l-4-4 4-4-4-4 4-4z" opacity="0.7"/><circle cx="12" cy="12" r="3" fill="white"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;">Snowflake Data Lake</h4>
+                    <span class="tag" style="background:rgba(41,181,232,0.2);color:#0B7DB8;">Data Source</span>
+                  </div>
+                  <p style="font-size:0.78rem;color:#374151;margin-top:2px;">Asset Telemetry · Service History · Contract Data · Digital Twin Models</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="arch-arrow">
+              <div class="arch-arrow-line" style="height:28px;">
+                <div class="arch-arrow-travel"></div>
+              </div>
+              <div style="position:absolute;font-size:9px;font-weight:700;color:#6B7280;left:60px;letter-spacing:0.08em;">ZERO-COPY FEDERATION ↕</div>
+            </div>
+
+            <!-- Layer 2: Data Cloud -->
+            <div class="arch-layer rounded-2xl p-5" style="background:linear-gradient(135deg,#F3E8FF,#EDD9FF);border:1px solid #D8B4FE;">
+              <div class="flex items-center gap-3">
+                <div style="width:40px;height:40px;background:linear-gradient(135deg,#7C3AED,#9F67F5);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" stroke="white" stroke-width="1.8"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" stroke="white" stroke-width="1.8"/><path d="M4 12v4c0 1.66 3.58 3 8 3s8-1.34 8-3v-4" stroke="white" stroke-width="1.8"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;">Data Cloud</h4>
+                    <span class="tag" style="background:rgba(124,58,237,0.15);color:#7C3AED;">Unification Layer</span>
+                  </div>
+                  <p style="font-size:0.78rem;color:#374151;margin-top:2px;">Unified Customer &amp; Asset Profiles · AI-Ready Segmentation · Real-Time Streaming</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="arch-arrow">
+              <div class="arch-arrow-line" style="height:28px;">
+                <div class="arch-arrow-travel" style="animation-delay:0.6s;"></div>
+              </div>
+              <div style="position:absolute;font-size:9px;font-weight:700;color:#6B7280;left:60px;letter-spacing:0.08em;">TRUST LAYER BOUNDARY ↕</div>
+            </div>
+
+            <!-- Layer 3: Trust Layer -->
+            <div class="arch-layer rounded-2xl p-5" style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:2px solid #FBBF24;">
+              <div class="flex items-center gap-3">
+                <div style="width:40px;height:40px;background:linear-gradient(135deg,#D97706,#FBBF24);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 2L4 6v6c0 5.5 3.5 10.7 8 12 4.5-1.3 8-6.5 8-12V6L12 2z" stroke="white" stroke-width="1.8" stroke-linejoin="round" fill="rgba(255,255,255,0.15)"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;">Salesforce Trust Layer + Claude AI (AWS Bedrock)</h4>
+                    <span class="tag" style="background:rgba(217,119,6,0.15);color:#92400E;">Intelligence Layer</span>
+                  </div>
+                  <p style="font-size:0.78rem;color:#374151;margin-top:2px;">Asset Health Scoring · Digital Twin Analysis · Model-Agnostic · Zero Data Retention · Enterprise Certified</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="arch-arrow">
+              <div class="arch-arrow-line" style="height:28px;">
+                <div class="arch-arrow-travel" style="animation-delay:1.2s;"></div>
+              </div>
+              <div style="position:absolute;font-size:9px;font-weight:700;color:#6B7280;left:60px;letter-spacing:0.08em;">AGENT ORCHESTRATION ↕</div>
+            </div>
+
+            <!-- Layer 4: Agentforce -->
+            <div class="arch-layer rounded-2xl p-5" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FCA5A5;">
+              <div class="flex items-center gap-3">
+                <div style="width:40px;height:40px;background:linear-gradient(135deg,#DC2626,#F87171);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <h4 style="font-size:0.9rem;font-weight:800;color:#0B2545;">Agentforce</h4>
+                    <span class="tag" style="background:rgba(220,38,38,0.15);color:#DC2626;">Orchestration Layer</span>
+                  </div>
+                  <p style="font-size:0.78rem;color:#374151;margin-top:2px;">Automated Workflow Triggers · Multi-Step Agent Actions · AI Signal → Business Action</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connector -->
+            <div class="arch-arrow">
+              <div class="arch-arrow-line" style="height:28px;">
+                <div class="arch-arrow-travel" style="animation-delay:1.8s;"></div>
+              </div>
+            </div>
+
+            <!-- Layer 5: Apps -->
+            <div class="grid grid-cols-3 gap-3">
+              <div class="arch-layer rounded-xl p-4 text-center" style="background:linear-gradient(135deg,#EBF4FF,#DBEAFE);border:1px solid #93C5FD;">
+                <div style="font-size:10px;font-weight:800;color:#1363DF;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Sales Cloud</div>
+                <div style="font-size:0.75rem;color:#374151;">Proposal Drafts · Opportunity Stages</div>
+              </div>
+              <div class="arch-layer rounded-xl p-4 text-center" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:1px solid #6EE7B7;">
+                <div style="font-size:10px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Service Cloud</div>
+                <div style="font-size:0.75rem;color:#374151;">Work Order Dispatch · Case Logging</div>
+              </div>
+              <div class="arch-layer rounded-xl p-4 text-center" style="background:linear-gradient(135deg,#FFF7ED,#FED7AA);border:1px solid #FDBA74;">
+                <div style="font-size:10px;font-weight:800;color:#C2410C;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Field Service</div>
+                <div style="font-size:0.75rem;color:#374151;">Crew Dispatch · Asset Inspection</div>
+              </div>
+            </div>
+
+          </div><!-- end space-y -->
+        </div><!-- end reveal -->
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 7 — PE BOARD DASHBOARD                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-7" class="slide" style="background:linear-gradient(160deg,#0B2545 0%,#050F1F 100%);padding:80px 60px;">
+
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(19,99,223,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(19,99,223,0.04) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;"></div>
+
+  <div class="max-w-6xl mx-auto w-full relative z-10">
+    <div class="reveal mb-3">
+      <span class="pill" style="background:rgba(0,161,224,0.15);color:#7EC8F4;border:1px solid rgba(0,161,224,0.3);">Pillar 4</span>
+    </div>
+    <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:white;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+      Warren Equity Board-Ready<br/><span style="color:#00A1E0;">Intelligence — Live</span>
+    </h2>
+    <div class="cyan-line reveal" style="margin-bottom:30px;"></div>
+
+    <!-- Dashboard card -->
+    <div class="reveal bg-white rounded-3xl overflow-hidden" style="box-shadow:0 24px 64px rgba(0,0,0,0.3);">
+
+      <!-- Dashboard header -->
+      <div style="background:linear-gradient(135deg,#0B2545,#1363DF);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;">
+        <div class="flex items-center gap-3">
+          <div style="width:10px;height:10px;background:#34D399;border-radius:50%;animation:pulseSlow 2s infinite;"></div>
+          <span style="color:white;font-size:13px;font-weight:700;">Warren Equity Partners — USG Water Solutions Executive View</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span style="color:rgba(255,255,255,0.6);font-size:11px;">Last updated: Live · Tableau + Data Cloud</span>
+          <div style="width:8px;height:8px;background:#FBBF24;border-radius:50%;"></div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div style="border-bottom:1px solid #E5E7EB;padding:0 24px;display:flex;gap:0;">
+        <button class="dash-tab active" onclick="switchDashTab(event,'renewal')" style="padding:14px 20px;font-size:13px;font-weight:700;color:#6B7280;background:none;border:none;">
+          Top 10 Renewal Risk
+        </button>
+        <button class="dash-tab" onclick="switchDashTab(event,'pipeline')" style="padding:14px 20px;font-size:13px;font-weight:700;color:#6B7280;background:none;border:none;">
+          Regional Pipeline
+        </button>
+        <button class="dash-tab" onclick="switchDashTab(event,'winloss')" style="padding:14px 20px;font-size:13px;font-weight:700;color:#6B7280;background:none;border:none;">
+          RFP Win/Loss
+        </button>
+      </div>
+
+      <!-- Panel: Renewal Risk -->
+      <div id="dash-renewal" class="dash-panel active" style="padding:24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead>
+            <tr style="border-bottom:2px solid #E5E7EB;">
+              <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">#</th>
+              <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Municipal Account</th>
+              <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Days to Renewal</th>
+              <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Contract Value</th>
+              <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Risk Score</th>
+              <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:800;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">1</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Denver Metro Water District</td>
+              <td style="padding:10px 12px;font-weight:700;color:#DC2626;">45 days</td>
+              <td style="padding:10px 12px;color:#374151;">$3.1M</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#FEE2E2;border-radius:3px;overflow:hidden;"><div style="width:94%;height:100%;background:#DC2626;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#DC2626;">94</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#FEF2F2;color:#DC2626;">CRITICAL</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">2</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Houston MUD #1</td>
+              <td style="padding:10px 12px;font-weight:700;color:#DC2626;">85 days</td>
+              <td style="padding:10px 12px;color:#374151;">$2.4M</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#FEE2E2;border-radius:3px;overflow:hidden;"><div style="width:87%;height:100%;background:#EF4444;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#EF4444;">87</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#FEF2F2;color:#EF4444;">HIGH</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">3</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Atlanta Watershed Management</td>
+              <td style="padding:10px 12px;font-weight:700;color:#EF4444;">112 days</td>
+              <td style="padding:10px 12px;color:#374151;">$1.8M</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#FEE2E2;border-radius:3px;overflow:hidden;"><div style="width:82%;height:100%;background:#EF4444;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#EF4444;">82</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#FEF2F2;color:#EF4444;">HIGH</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">4</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Phoenix Water Resources Dept.</td>
+              <td style="padding:10px 12px;color:#374151;">178 days</td>
+              <td style="padding:10px 12px;color:#374151;">$1.2M</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#FEF3C7;border-radius:3px;overflow:hidden;"><div style="width:61%;height:100%;background:#D97706;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#D97706;">61</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#FFFBEB;color:#92400E;">MEDIUM</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">5</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Charlotte Stormwater Services</td>
+              <td style="padding:10px 12px;color:#374151;">200 days</td>
+              <td style="padding:10px 12px;color:#374151;">$890K</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#FEF3C7;border-radius:3px;overflow:hidden;"><div style="width:55%;height:100%;background:#F59E0B;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#F59E0B;">55</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#FFFBEB;color:#92400E;">MEDIUM</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">6</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Dallas Water Services Dept.</td>
+              <td style="padding:10px 12px;color:#374151;">220 days</td>
+              <td style="padding:10px 12px;color:#374151;">$1.5M</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#FEF3C7;border-radius:3px;overflow:hidden;"><div style="width:48%;height:100%;background:#F59E0B;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#F59E0B;">48</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#FFFBEB;color:#92400E;">MEDIUM</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">7</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Tampa Bay Water Authority</td>
+              <td style="padding:10px 12px;color:#374151;">255 days</td>
+              <td style="padding:10px 12px;color:#374151;">$670K</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#ECFDF5;border-radius:3px;overflow:hidden;"><div style="width:34%;height:100%;background:#059669;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#059669;">34</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#ECFDF5;color:#065F46;">LOW</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">8</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Greater Seattle Utilities</td>
+              <td style="padding:10px 12px;color:#374151;">280 days</td>
+              <td style="padding:10px 12px;color:#374151;">$945K</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#ECFDF5;border-radius:3px;overflow:hidden;"><div style="width:28%;height:100%;background:#059669;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#059669;">28</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#ECFDF5;color:#065F46;">LOW</span></td>
+            </tr>
+            <tr class="risk-row" style="border-bottom:1px solid #F3F4F6;">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">9</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">Miami-Dade DERM</td>
+              <td style="padding:10px 12px;color:#374151;">310 days</td>
+              <td style="padding:10px 12px;color:#374151;">$520K</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#ECFDF5;border-radius:3px;overflow:hidden;"><div style="width:19%;height:100%;background:#34D399;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#059669;">19</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#ECFDF5;color:#065F46;">LOW</span></td>
+            </tr>
+            <tr class="risk-row">
+              <td style="padding:10px 12px;color:#9CA3AF;font-weight:600;">10</td>
+              <td style="padding:10px 12px;font-weight:700;color:#0B2545;">St. Louis MSD</td>
+              <td style="padding:10px 12px;color:#374151;">330 days</td>
+              <td style="padding:10px 12px;color:#374151;">$380K</td>
+              <td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:56px;height:5px;background:#ECFDF5;border-radius:3px;overflow:hidden;"><div style="width:12%;height:100%;background:#34D399;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:700;color:#059669;">12</span></div></td>
+              <td style="padding:10px 12px;"><span class="tag" style="background:#ECFDF5;color:#065F46;">LOW</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding:12px 12px 0;border-top:1px solid #F3F4F6;margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:11px;color:#9CA3AF;">Powered by Tableau + Data Cloud · Live Snowflake Sync</span>
+          <span style="font-size:11px;font-weight:700;color:#DC2626;">3 accounts require immediate intervention</span>
+        </div>
+      </div>
+
+      <!-- Panel: Pipeline -->
+      <div id="dash-pipeline" class="dash-panel" style="padding:24px;">
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div style="flex:1;">
+            <canvas id="pipelineChart" height="220"></canvas>
+          </div>
+          <div style="width:200px;display:flex;flex-direction:column;gap:12px;padding-top:20px;">
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px;">Total Pipeline</div>
+              <div style="font-size:1.8rem;font-weight:900;color:#0B2545;letter-spacing:-0.02em;">$31.4M</div>
+            </div>
+            <div style="height:1px;background:#E5E7EB;"></div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px;">QoQ Growth</div>
+              <div style="font-size:1.4rem;font-weight:900;color:#059669;">+18.3%</div>
+            </div>
+            <div style="height:1px;background:#E5E7EB;"></div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px;">Fastest Growth</div>
+              <div style="font-size:1rem;font-weight:800;color:#1363DF;">Southeast</div>
+              <div style="font-size:11px;color:#6B7280;">+24% QoQ</div>
+            </div>
+            <div style="height:1px;background:#E5E7EB;"></div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px;">Avg Deal Size</div>
+              <div style="font-size:1.1rem;font-weight:900;color:#0B2545;">$628K</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Win/Loss -->
+      <div id="dash-winloss" class="dash-panel" style="padding:24px;">
+        <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="width:240px;">
+            <canvas id="winlossChart" height="240"></canvas>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <h4 style="font-size:0.875rem;font-weight:800;color:#0B2545;margin-bottom:16px;">RFP Performance — Last 12 Months</h4>
+            <div class="space-y-4">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:12px;font-weight:600;color:#374151;">Won</span>
+                  <span style="font-size:12px;font-weight:800;color:#059669;">34 bids · 34%</span>
+                </div>
+                <div style="height:7px;background:#E5E7EB;border-radius:4px;overflow:hidden;">
+                  <div style="width:34%;height:100%;background:#059669;border-radius:4px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:12px;font-weight:600;color:#374151;">Lost</span>
+                  <span style="font-size:12px;font-weight:800;color:#DC2626;">41 bids · 41%</span>
+                </div>
+                <div style="height:7px;background:#E5E7EB;border-radius:4px;overflow:hidden;">
+                  <div style="width:41%;height:100%;background:#DC2626;border-radius:4px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:12px;font-weight:600;color:#374151;">In Progress</span>
+                  <span style="font-size:12px;font-weight:800;color:#D97706;">25 bids · 25%</span>
+                </div>
+                <div style="height:7px;background:#E5E7EB;border-radius:4px;overflow:hidden;">
+                  <div style="width:25%;height:100%;background:#D97706;border-radius:4px;"></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:20px;padding:14px;background:#F8FAFC;border-radius:10px;border:1px solid #E5E7EB;">
+              <p style="font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Insight</p>
+              <p style="font-size:0.8rem;color:#374151;line-height:1.55;">Top loss reason: <strong>Slow response time</strong> (39% of losses). Automated RFP stage flows + SLA enforcement projected to recover 8–12 bids annually.</p>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+              <div style="background:#ECFDF5;border-radius:8px;padding:10px 14px;flex:1;min-width:80px;text-align:center;">
+                <div style="font-size:1.2rem;font-weight:900;color:#059669;">$22M</div>
+                <div style="font-size:9px;font-weight:700;color:#065F46;text-transform:uppercase;">Won Value</div>
+              </div>
+              <div style="background:#FEF2F2;border-radius:8px;padding:10px 14px;flex:1;min-width:80px;text-align:center;">
+                <div style="font-size:1.2rem;font-weight:900;color:#DC2626;">$28M</div>
+                <div style="font-size:9px;font-weight:700;color:#991B1B;text-transform:uppercase;">Lost Value</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end dashboard card -->
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 8 — M&A PORTFOLIO SCALE                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-8" class="slide" style="background:#F0F4F8;padding:80px 60px;">
+  <div class="max-w-6xl mx-auto w-full">
+
+    <div class="flex flex-col lg:flex-row gap-12 items-start">
+
+      <!-- Left -->
+      <div class="lg:w-5/12">
+        <div class="reveal mb-3">
+          <span class="pill" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;">M&amp;A Engine</span>
+        </div>
+        <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:#0B2545;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+          The Warren Equity<br/><span style="color:#059669;">Salesforce Standard</span>
+        </h2>
+        <div class="cyan-line reveal" style="background:linear-gradient(90deg,#059669,#34D399);margin-bottom:16px;"></div>
+
+        <p class="reveal" style="color:#64748B;font-size:0.95rem;line-height:1.7;margin-bottom:20px;">
+          11 Warren Equity portfolio companies already run on Salesforce. USG Water joining the platform doesn't just solve today's problems — it plugs into a <strong style="color:#0B2545;">pre-built M&A integration standard</strong> that the PE firm has operationalized across its entire portfolio.
+        </p>
+
+        <div class="reveal bg-white rounded-2xl p-6 mb-6" style="box-shadow:0 2px 16px rgba(0,0,0,0.07);border:1px solid #E5E7EB;">
+          <h4 style="font-size:0.85rem;font-weight:800;color:#0B2545;margin-bottom:14px;">What This Means for Warren Equity</h4>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+              <p style="font-size:0.85rem;color:#374151;line-height:1.6;"><strong>Plug-and-play M&A integration</strong> — newly acquired companies onboard to a known reporting standard without rebuilding BI architecture</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+              <p style="font-size:0.85rem;color:#374151;line-height:1.6;"><strong>Cross-portfolio benchmarking</strong> — compare pipeline velocity, renewal rates, and field productivity across all WEP companies</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+              <p style="font-size:0.85rem;color:#374151;line-height:1.6;"><strong>Accelerated time-to-value</strong> — implementation best practices from 11 prior rollouts dramatically reduce risk and timeline</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <div style="width:24px;height:24px;background:#ECFDF5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                <svg width="13" height="13" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              </div>
+              <p style="font-size:0.85rem;color:#374151;line-height:1.6;"><strong>Exit readiness</strong> — a governed, unified data model dramatically improves due diligence data quality for strategic acquirers</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="reveal grid grid-cols-2 gap-4">
+          <div class="bg-white rounded-xl p-4 text-center" style="box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+            <div style="font-size:2rem;font-weight:900;color:#059669;">11</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;margin-top:2px;">WEP Portfolio Companies</div>
+          </div>
+          <div class="bg-white rounded-xl p-4 text-center" style="box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+            <div style="font-size:2rem;font-weight:900;color:#1363DF;">&lt;90</div>
+            <div style="font-size:10px;color:#9CA3AF;font-weight:700;text-transform:uppercase;margin-top:2px;">Days to M&A Onboard</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Portfolio cards -->
+      <div class="lg:w-7/12">
+        <div class="reveal mb-4">
+          <h3 style="font-size:0.875rem;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.08em;">Confirmed Warren Equity Portfolio — Already on Salesforce</h3>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+
+          <!-- Named companies -->
+          <div class="reveal port-card bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #E5E7EB;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#1363DF,#00A1E0);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <span class="tag" style="background:#ECFDF5;color:#059669;">✓ Live</span>
+            </div>
+            <h4 style="font-size:0.875rem;font-weight:800;color:#0B2545;margin-bottom:3px;line-height:1.3;">Allied Power Group</h4>
+            <p style="font-size:0.75rem;color:#9CA3AF;">Power infrastructure services</p>
+          </div>
+
+          <div class="reveal d-1 port-card bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #E5E7EB;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#059669,#34D399);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 2C12 2 4 8 4 14a8 8 0 0016 0C20 8 12 2 12 2z"/></svg>
+              </div>
+              <span class="tag" style="background:#ECFDF5;color:#059669;">✓ Live</span>
+            </div>
+            <h4 style="font-size:0.875rem;font-weight:800;color:#0B2545;margin-bottom:3px;line-height:1.3;">Vortex Companies</h4>
+            <p style="font-size:0.75rem;color:#9CA3AF;">Underground infrastructure rehab</p>
+          </div>
+
+          <div class="reveal d-2 port-card bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #E5E7EB;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#0369A1,#38BDF8);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 2C12 2 4 8 4 14a8 8 0 0016 0C20 8 12 2 12 2z" opacity="0.8"/><circle cx="12" cy="14" r="3" fill="white" opacity="0.7"/></svg>
+              </div>
+              <span class="tag" style="background:#ECFDF5;color:#059669;">✓ Live</span>
+            </div>
+            <h4 style="font-size:0.875rem;font-weight:800;color:#0B2545;margin-bottom:3px;line-height:1.3;">HydroMax USA</h4>
+            <p style="font-size:0.75rem;color:#9CA3AF;">Hydro excavation services</p>
+          </div>
+
+          <div class="reveal d-3 port-card bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #E5E7EB;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M3 7c0 0 4-2 9 0s9 0 9 0v10c0 0-4 2-9 0s-9 0-9 0V7z"/></svg>
+              </div>
+              <span class="tag" style="background:#ECFDF5;color:#059669;">✓ Live</span>
+            </div>
+            <h4 style="font-size:0.875rem;font-weight:800;color:#0B2545;margin-bottom:3px;line-height:1.3;">Magnolia River</h4>
+            <p style="font-size:0.75rem;color:#9CA3AF;">Utility engineering &amp; compliance</p>
+          </div>
+
+          <div class="reveal d-4 port-card bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #E5E7EB;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="width:36px;height:36px;background:linear-gradient(135deg,#D97706,#FBBF24);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M3 12l4-4v3h8l4-4v3h2V7l-6 6-4-4H3l2 2-2 1z" opacity="0.8"/><rect x="6" y="16" width="12" height="4" rx="1" fill="white" opacity="0.6"/></svg>
+              </div>
+              <span class="tag" style="background:#ECFDF5;color:#059669;">✓ Live</span>
+            </div>
+            <h4 style="font-size:0.875rem;font-weight:800;color:#0B2545;margin-bottom:3px;line-height:1.3;">StormTrap</h4>
+            <p style="font-size:0.75rem;color:#9CA3AF;">Stormwater management systems</p>
+          </div>
+
+          <!-- +6 more placeholder card -->
+          <div class="reveal d-5 port-card rounded-2xl p-5" style="background:linear-gradient(135deg,#0B2545,#1363DF);box-shadow:0 2px 12px rgba(0,0,0,0.12);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+                <span style="color:white;font-size:1rem;font-weight:900;">+6</span>
+              </div>
+              <span class="tag" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);">Live</span>
+            </div>
+            <h4 style="font-size:0.875rem;font-weight:800;color:white;margin-bottom:3px;line-height:1.3;">6 Additional<br/>Portfolio Companies</h4>
+            <p style="font-size:0.75rem;color:rgba(255,255,255,0.55);">Infrastructure &amp; utilities sector</p>
+          </div>
+
+          <!-- USG Water — join the network -->
+          <div class="reveal d-6 port-card rounded-2xl p-5 col-span-2 sm:col-span-3" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:2px dashed #6EE7B7;">
+            <div class="flex items-center gap-4">
+              <div style="width:44px;height:44px;background:linear-gradient(135deg,#00A1E0,#1363DF);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="22" height="22" fill="white" viewBox="0 0 24 24"><path d="M12 2C12 2 4 8 4 14a8 8 0 0016 0C20 8 12 2 12 2z"/></svg>
+              </div>
+              <div>
+                <span class="tag" style="background:rgba(5,150,105,0.15);color:#059669;margin-bottom:4px;display:inline-block;">Next to Join</span>
+                <h4 style="font-size:1rem;font-weight:800;color:#0B2545;">USG Water Solutions</h4>
+                <p style="font-size:0.8rem;color:#065F46;">Joining the Warren Equity Salesforce standard — gaining immediate access to 11 implementation playbooks, cross-portfolio benchmarks, and an M&A-ready reporting foundation.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 9 — PATH FORWARD                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-9" class="slide" style="background:linear-gradient(160deg,#0B2545 0%,#050F1F 100%);padding:80px 60px;">
+
+  <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(0,161,224,0.06) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;"></div>
+
+  <div class="max-w-5xl mx-auto w-full relative z-10">
+    <div class="text-center mb-12">
+      <div class="reveal mb-3 flex justify-center">
+        <span class="pill" style="background:rgba(0,161,224,0.15);color:#7EC8F4;border:1px solid rgba(0,161,224,0.3);">Next Steps</span>
+      </div>
+      <h2 class="reveal" style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:white;letter-spacing:-0.025em;line-height:1.1;margin-bottom:10px;">
+        90-Day Path to<br/><span style="color:#00A1E0;">Revenue Capture</span>
+      </h2>
+      <div class="cyan-line reveal" style="margin:14px auto;"></div>
+      <p class="reveal" style="color:rgba(255,255,255,0.6);font-size:0.95rem;max-width:520px;margin:0 auto;line-height:1.7;">A phased approach that delivers measurable ROI at each checkpoint — starting with the October technical review and building toward full deployment.</p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative">
+      <!-- Vertical line -->
+      <div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#1363DF,rgba(19,99,223,0.1));transform:translateX(-50%);"></div>
+
+      <!-- Phase 1 -->
+      <div class="reveal flex items-start gap-8 mb-12" style="padding-left:0;">
+        <div style="flex:1;text-align:right;padding-right:32px;">
+          <div style="font-size:10px;font-weight:800;color:#00A1E0;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Now → October 2026</div>
+          <h3 style="color:white;font-size:1.1rem;font-weight:800;margin-bottom:8px;">Phase 1: Architecture Validation</h3>
+          <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Technical review of the Claude → Agentforce integration architecture. Confirm Data Cloud Zero-Copy federation with existing Snowflake infrastructure. Scope Field Service Mobile pilot with 10–15 crews.</p>
+          <div class="flex justify-end gap-2 mt-3 flex-wrap">
+            <span class="tag" style="background:rgba(0,161,224,0.12);color:#7EC8F4;">Architecture Review</span>
+            <span class="tag" style="background:rgba(0,161,224,0.12);color:#7EC8F4;">Pilot Scoping</span>
+          </div>
+        </div>
+        <div style="position:relative;z-index:2;flex-shrink:0;">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,#1363DF,#00A1E0);border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #0B2545;">
+            <span style="color:white;font-size:0.9rem;font-weight:900;">1</span>
+          </div>
+        </div>
+        <div style="flex:1;padding-left:32px;padding-top:24px;">
+          <div style="background:rgba(0,161,224,0.08);border:1px solid rgba(0,161,224,0.2);border-radius:12px;padding:14px;">
+            <p style="font-size:11px;font-weight:700;color:#00A1E0;text-transform:uppercase;margin-bottom:4px;">Key Milestone</p>
+            <p style="font-size:0.82rem;color:rgba(255,255,255,0.7);">October Board Review: Architecture sign-off &amp; pilot go/no-go decision</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="reveal flex items-start gap-8 mb-12">
+        <div style="flex:1;text-align:right;padding-right:32px;padding-top:24px;">
+          <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);border-radius:12px;padding:14px;">
+            <p style="font-size:11px;font-weight:700;color:#A78BFA;text-transform:uppercase;margin-bottom:4px;">Key Milestone</p>
+            <p style="font-size:0.82rem;color:rgba(255,255,255,0.7);">First tracked cross-sell opportunities created from field observations. Attribution dashboard live.</p>
+          </div>
+        </div>
+        <div style="position:relative;z-index:2;flex-shrink:0;">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #0B2545;">
+            <span style="color:white;font-size:0.9rem;font-weight:900;">2</span>
+          </div>
+        </div>
+        <div style="flex:1;padding-left:32px;">
+          <div style="font-size:10px;font-weight:800;color:#A78BFA;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Oct → Dec 2026</div>
+          <h3 style="color:white;font-size:1.1rem;font-weight:800;margin-bottom:8px;">Phase 2: Pilot Deployment</h3>
+          <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Deploy Field Service Mobile with 15-crew pilot cohort. Launch Marketing Cloud Growth with Campaign Influence. Configure RFP Opportunity stages with win/loss codes. Go live on Tableau board dashboards.</p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <span class="tag" style="background:rgba(124,58,237,0.12);color:#C4A8F5;">Field Service Pilot</span>
+            <span class="tag" style="background:rgba(124,58,237,0.12);color:#C4A8F5;">MCG Live</span>
+            <span class="tag" style="background:rgba(124,58,237,0.12);color:#C4A8F5;">Tableau Board View</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="reveal flex items-start gap-8">
+        <div style="flex:1;text-align:right;padding-right:32px;">
+          <div style="font-size:10px;font-weight:800;color:#34D399;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Jan → Mar 2027</div>
+          <h3 style="color:white;font-size:1.1rem;font-weight:800;margin-bottom:8px;">Phase 3: Full Revenue Engine</h3>
+          <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">Full 130+ crew Field Service deployment. Agentforce AI automation live — Claude asset scores triggering automated proposals and dispatch. Complete Snowflake Data Cloud federation. Warren Equity board reporting standardized.</p>
+          <div class="flex justify-end gap-2 mt-3 flex-wrap">
+            <span class="tag" style="background:rgba(5,150,105,0.15);color:#6EE7B7;">Full Crew Deploy</span>
+            <span class="tag" style="background:rgba(5,150,105,0.15);color:#6EE7B7;">Agentforce Live</span>
+            <span class="tag" style="background:rgba(5,150,105,0.15);color:#6EE7B7;">WEP Standard</span>
+          </div>
+        </div>
+        <div style="position:relative;z-index:2;flex-shrink:0;">
+          <div style="width:44px;height:44px;background:linear-gradient(135deg,#059669,#34D399);border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #0B2545;">
+            <span style="color:white;font-size:0.9rem;font-weight:900;">3</span>
+          </div>
+        </div>
+        <div style="flex:1;padding-left:32px;padding-top:24px;">
+          <div style="background:rgba(5,150,105,0.1);border:1px solid rgba(5,150,105,0.25);border-radius:12px;padding:14px;">
+            <p style="font-size:11px;font-weight:700;color:#34D399;text-transform:uppercase;margin-bottom:4px;">Key Milestone</p>
+            <p style="font-size:0.82rem;color:rgba(255,255,255,0.7);">Full revenue engine live: 130+ crews generating tracked pipeline, AI automating proposals, board viewing live intelligence.</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end timeline -->
+
+    <!-- CTA -->
+    <div class="reveal mt-16 glass rounded-2xl p-8 text-center" style="border:1px solid rgba(0,161,224,0.2);">
+      <h3 style="color:white;font-size:1.3rem;font-weight:900;margin-bottom:8px;">Ready to Schedule the October Review?</h3>
+      <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:20px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.65;">The next step is confirming the Data Cloud + Snowflake architecture and scoping the Field Service Mobile pilot. Let's put time on the calendar with your technical team.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button style="padding:12px 32px;background:linear-gradient(135deg,#1363DF,#00A1E0);color:white;font-size:14px;font-weight:800;border:none;border-radius:10px;cursor:pointer;letter-spacing:0.02em;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+          Schedule Architecture Review →
+        </button>
+        <button style="padding:12px 32px;background:rgba(255,255,255,0.07);color:white;font-size:14px;font-weight:700;border:1px solid rgba(255,255,255,0.2);border-radius:10px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">
+          Download Executive Summary
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="reveal mt-10 text-center" style="border-top:1px solid rgba(255,255,255,0.08);padding-top:20px;">
+      <p style="font-size:11px;color:rgba(255,255,255,0.3);line-height:1.6;">
+        Confidential — Prepared for Warren Equity Partners &amp; USG Water Solutions Leadership · September 2026<br/>
+        All architecture details presented as evaluation-stage for October review. Subject to Salesforce product roadmap confirmation.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── Slide registry ── */
+const SLIDES = [
+  { id: 'slide-1', label: 'Overview'       },
+  { id: 'slide-2', label: 'The Challenge'  },
+  { id: 'slide-3', label: 'Platform'       },
+  { id: 'slide-4', label: 'Field Engine'   },
+  { id: 'slide-5', label: 'Attribution'    },
+  { id: 'slide-6', label: 'AI Architecture'},
+  { id: 'slide-7', label: 'Board Dashboard'},
+  { id: 'slide-8', label: 'M&A Portfolio'  },
+  { id: 'slide-9', label: 'Path Forward'   },
+];
+
+/* ── Build sidebar ── */
+const sidebar = document.getElementById('sidebar');
+SLIDES.forEach((s, i) => {
+  const item = document.createElement('div');
+  item.className = 'nav-item';
+  item.innerHTML = `
+    <span class="nav-label">${s.label}</span>
+    <span class="nav-dot" id="dot-${i}" data-slide="${s.id}"></span>
+  `;
+  item.addEventListener('click', () => {
+    document.getElementById(s.id).scrollIntoView({ behavior: 'smooth' });
+  });
+  sidebar.appendChild(item);
+});
+
+/* ── Update active dot on scroll ── */
+let activeIndex = 0;
+function updateNav() {
+  const mid = window.innerHeight / 2;
+  SLIDES.forEach((s, i) => {
+    const el = document.getElementById(s.id);
+    const rect = el.getBoundingClientRect();
+    if (rect.top <= mid && rect.bottom > mid) {
+      activeIndex = i;
+    }
+  });
+  SLIDES.forEach((_, i) => {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.className = 'nav-dot' + (i === activeIndex ? ' active' : i < activeIndex ? ' visited' : '');
+  });
+}
+
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+
+/* ── Keyboard navigation ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const next = Math.min(activeIndex + 1, SLIDES.length - 1);
+    document.getElementById(SLIDES[next].id).scrollIntoView({ behavior: 'smooth' });
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const prev = Math.max(activeIndex - 1, 0);
+    document.getElementById(SLIDES[prev].id).scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+/* ── IntersectionObserver for reveal animations ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+/* ── Flow diagram (Slide 4) ── */
+let flowStep = 1;
+const totalSteps = 3;
+
+function updateFlow() {
+  for (let i = 1; i <= totalSteps; i++) {
+    const stepEl = document.getElementById(`flow-step-${i}`);
+    const detail = document.getElementById(`flow-detail-${i}`);
+    const conn = document.getElementById(`flow-conn-${i}`);
+    const icon = document.getElementById(`flow-icon-${i}`);
+
+    // Steps
+    stepEl.classList.remove('active', 'done');
+    if (i === flowStep) stepEl.classList.add('active');
+    else if (i < flowStep) stepEl.classList.add('done');
+
+    // Details
+    if (detail) {
+      detail.classList.toggle('visible', i <= flowStep);
+    }
+
+    // Icons
+    if (icon) {
+      icon.style.opacity = i <= flowStep ? '1' : '0.3';
+    }
+
+    // Connectors
+    if (conn) {
+      conn.classList.remove('done', 'active');
+      if (i < flowStep) conn.classList.add('done');
+      else if (i === flowStep) conn.classList.add('active');
+    }
+  }
+
+  document.getElementById('flow-progress').textContent = `Step ${flowStep} of ${totalSteps}`;
+  const btn = document.getElementById('flow-next-btn');
+  const complete = document.getElementById('flow-complete');
+
+  if (flowStep >= totalSteps) {
+    btn.style.display = 'none';
+    complete.style.display = 'block';
+  } else {
+    btn.style.display = 'flex';
+    complete.style.display = 'none';
+  }
+}
+
+window.advanceFlow = function () {
+  if (flowStep < totalSteps) {
+    flowStep++;
+    updateFlow();
+  }
+};
+
+window.resetFlow = function () {
+  flowStep = 1;
+  updateFlow();
+};
+
+updateFlow();
+
+/* ── Dashboard tabs ── */
+window.switchDashTab = function (e, panelId) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  document.getElementById(`dash-${panelId}`).classList.add('active');
+  // Render chart if needed
+  if (panelId === 'pipeline') renderPipelineChart();
+  if (panelId === 'winloss') renderWinLossChart();
+};
+
+/* ── Charts ── */
+let pipelineChartInstance = null;
+let winlossChartInstance = null;
+
+function renderPipelineChart() {
+  if (pipelineChartInstance) return;
+  const ctx = document.getElementById('pipelineChart').getContext('2d');
+  pipelineChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Southeast', 'Southwest', 'Northeast', 'Midwest', 'Pacific NW'],
+      datasets: [{
+        label: 'Pipeline Value ($M)',
+        data: [8.4, 7.1, 6.2, 5.8, 3.9],
+        backgroundColor: [
+          'rgba(19,99,223,0.85)',
+          'rgba(0,161,224,0.85)',
+          'rgba(124,58,237,0.85)',
+          'rgba(217,119,6,0.85)',
+          'rgba(5,150,105,0.85)',
+        ],
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` $${ctx.raw}M pipeline`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: '600', size: 11 }, color: '#6B7280' } },
+        y: {
+          grid: { color: '#F3F4F6' },
+          border: { display: false },
+          ticks: { callback: v => `$${v}M`, font: { size: 11 }, color: '#9CA3AF' },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+function renderWinLossChart() {
+  if (winlossChartInstance) return;
+  const ctx = document.getElementById('winlossChart').getContext('2d');
+  winlossChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Won (34%)', 'Lost (41%)', 'In Progress (25%)'],
+      datasets: [{
+        data: [34, 41, 25],
+        backgroundColor: ['#059669', '#DC2626', '#D97706'],
+        borderWidth: 3,
+        borderColor: '#ffffff',
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '68%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 14,
+            font: { size: 12, weight: '600' },
+            color: '#374151',
+            boxWidth: 12,
+            boxHeight: 12,
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.raw} bids`
+          }
+        }
+      }
+    }
+  });
+}
+
+// Pre-render pipeline chart since it's first visible
+setTimeout(() => {
+  if (document.getElementById('pipelineChart')) {
+    // Don't pre-render; let tab click handle it
+  }
+}, 500);
+
+</script>
+</body>
+</html>

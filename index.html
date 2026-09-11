@@ -1078,14 +1078,99 @@
       <h3 style="color:white;font-size:1.2rem;font-weight:900;margin-bottom:7px;">Ready to Schedule the October Review?</h3>
       <p style="color:rgba(255,255,255,0.6);font-size:0.88rem;margin-bottom:18px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.65;">The next step is confirming the Data Cloud + Snowflake architecture and scoping the Field Service Mobile pilot with your technical team.</p>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
-        <button style="padding:11px 28px;background:linear-gradient(135deg,var(--usg-blue),var(--usg-dark));color:white;font-size:13px;font-weight:800;border:none;border-radius:9px;cursor:pointer;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Schedule Architecture Review →</button>
-        <button style="padding:11px 28px;background:rgba(255,255,255,0.07);color:white;font-size:13px;font-weight:700;border:1px solid rgba(255,255,255,0.18);border-radius:9px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">Download Executive Summary</button>
+        <button onclick="document.getElementById('slide-10').scrollIntoView({behavior:'smooth'})" style="padding:11px 28px;background:linear-gradient(135deg,var(--usg-blue),var(--usg-dark));color:white;font-size:13px;font-weight:800;border:none;border-radius:9px;cursor:pointer;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Contact Your Salesforce Team →</button>
+        <button onclick="window.open('exec-summary.html','_blank')" style="padding:11px 28px;background:rgba(255,255,255,0.07);color:white;font-size:13px;font-weight:700;border:1px solid rgba(255,255,255,0.18);border-radius:9px;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">Download Executive Summary ↓</button>
       </div>
     </div>
 
     <div class="reveal mt-8 text-center" style="border-top:1px solid rgba(255,255,255,0.07);padding-top:16px;">
       <p style="font-size:10px;color:rgba(255,255,255,0.25);line-height:1.6;">Confidential — Prepared for Warren Equity Partners &amp; USG Water Solutions Leadership · September 2026<br/>Architecture details presented as evaluation-stage for October review. Subject to Salesforce product roadmap confirmation.</p>
     </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SLIDE 10 — MEET YOUR SALESFORCE TEAM                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="slide-10" class="slide" style="background:linear-gradient(160deg,#C8E8F7 0%,#A8D8EF 40%,#BDE3F5 100%);padding:80px 60px;position:relative;overflow:hidden;">
+
+  <!-- Cloud decorations -->
+  <div style="position:absolute;top:8%;left:-4%;width:320px;height:140px;background:white;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;opacity:0.55;pointer-events:none;filter:blur(2px);"></div>
+  <div style="position:absolute;top:4%;left:6%;width:200px;height:100px;background:white;border-radius:50%;opacity:0.45;pointer-events:none;filter:blur(1px);"></div>
+  <div style="position:absolute;top:12%;right:5%;width:260px;height:120px;background:white;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;opacity:0.5;pointer-events:none;filter:blur(2px);"></div>
+  <div style="position:absolute;top:6%;right:15%;width:160px;height:80px;background:white;border-radius:50%;opacity:0.4;pointer-events:none;filter:blur(1px);"></div>
+  <div style="position:absolute;bottom:10%;left:10%;width:180px;height:90px;background:white;border-radius:50%;opacity:0.35;pointer-events:none;filter:blur(2px);"></div>
+
+  <div class="max-w-5xl mx-auto w-full relative z-10">
+
+    <!-- Header row -->
+    <div class="reveal flex items-start justify-between flex-wrap gap-6 mb-10">
+      <div>
+        <h2 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:var(--usg-dark);letter-spacing:-0.025em;line-height:1.1;margin-bottom:4px;">Salesforce Account Team</h2>
+        <p style="color:#4A7FA5;font-size:1rem;font-weight:500;">Your dedicated team for USG Water Solutions</p>
+      </div>
+      <!-- Logos -->
+      <div style="display:flex;align-items:center;gap:14px;background:white;padding:12px 20px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+        <img src="https://usgwater.com/wp-content/uploads/2023/10/usg-water-logo_color.svg" alt="USG Water" style="height:32px;" onerror="this.style.display='none'"/>
+        <div style="width:1px;height:28px;background:#E5E7EB;"></div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="width:28px;height:28px;background:#00A1E0;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9.7 19.5c-.5.3-1.1.5-1.7.5-1.9 0-3.4-1.5-3.4-3.4 0-.4.1-.8.2-1.2C3.4 14.8 2.5 13.4 2.5 12c0-1.7 1-3.2 2.5-3.8C5.2 7.8 5.5 7.3 5.9 7c.8-.7 1.8-1 2.9-1 .8 0 1.6.2 2.2.6.7-1.5 2.3-2.6 4.1-2.6 2.5 0 4.5 2 4.5 4.5v.2c1.4.5 2.4 1.9 2.4 3.4 0 2-1.6 3.6-3.6 3.6h-8.7z"/></svg>
+          </div>
+          <span style="font-weight:800;font-size:0.95rem;color:#0B2545;">Salesforce</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team photo strip -->
+    <div class="reveal mb-10">
+      <img src="team.png" alt="Salesforce Account Team" style="width:100%;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);" onerror="this.style.display='none'"/>
+    </div>
+
+    <!-- Contact cards -->
+    <div class="reveal grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <!-- Hayden Florence -->
+      <div style="background:white;border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--usg-blue),var(--usg-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.4rem;font-weight:900;color:white;">H</div>
+        <h3 style="font-size:1.05rem;font-weight:900;color:var(--usg-dark);margin-bottom:3px;">Hayden Florence</h3>
+        <p style="font-size:0.82rem;font-weight:600;color:#4A7FA5;margin-bottom:16px;">Core Account Executive</p>
+        <a href="mailto:hflorence@salesforce.com" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 0;background:linear-gradient(135deg,var(--usg-blue),var(--usg-dark));color:white;font-size:12px;font-weight:700;border-radius:9px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          hflorence@salesforce.com
+        </a>
+      </div>
+
+      <!-- Eric Dalton -->
+      <div style="background:white;border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--usg-green),#4A9A1E);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.4rem;font-weight:900;color:white;">E</div>
+        <h3 style="font-size:1.05rem;font-weight:900;color:var(--usg-dark);margin-bottom:3px;">Eric Dalton</h3>
+        <p style="font-size:0.82rem;font-weight:600;color:#4A7FA5;margin-bottom:16px;">Core Solutions Engineer</p>
+        <a href="mailto:edalton@salesforce.com" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 0;background:linear-gradient(135deg,var(--usg-green),#4A9A1E);color:white;font-size:12px;font-weight:700;border-radius:9px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          edalton@salesforce.com
+        </a>
+      </div>
+
+      <!-- Justin Earls -->
+      <div style="background:white;border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--usg-orange),#D97706);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.4rem;font-weight:900;color:white;">J</div>
+        <h3 style="font-size:1.05rem;font-weight:900;color:var(--usg-dark);margin-bottom:3px;">Justin Earls</h3>
+        <p style="font-size:0.82rem;font-weight:600;color:#4A7FA5;margin-bottom:16px;">Regional Vice President</p>
+        <a href="mailto:jearls@salesforce.com" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 0;background:linear-gradient(135deg,var(--usg-orange),#D97706);color:white;font-size:12px;font-weight:700;border-radius:9px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          jearls@salesforce.com
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Footer note -->
+    <div class="reveal mt-8 text-center">
+      <p style="font-size:12px;color:#4A7FA5;font-weight:500;">Ready to take the next step? Reach out directly — we'll get the right conversation scheduled.</p>
+    </div>
+
   </div>
 </section>
 
@@ -1106,6 +1191,7 @@ const SLIDES = [
   {id:'slide-7',label:'Board Dashboard'},
   {id:'slide-8',label:'M&A Portfolio'},
   {id:'slide-9',label:'Path Forward'},
+  {id:'slide-10',label:'Account Team'},
 ];
 
 /* ── Progress bar ── */

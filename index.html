@@ -170,6 +170,73 @@
     .metric-bar-wrap:hover .metric-bar-label { color:var(--usg-blue); }
     .metric-bar-fill { transition: width 1.4s ease; }
     .metric-bar-wrap:hover .metric-bar-fill { filter:brightness(1.1); }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      /* Sidebar hidden on mobile */
+      #sidebar { display: none !important; }
+
+      /* Reduce all slide padding */
+      .slide { padding: 48px 20px 40px !important; min-height: auto !important; }
+
+      /* Hero */
+      #slide-1 { padding: 72px 20px 40px !important; }
+
+      /* Pain flip cards: auto height on mobile (stacked 1 col), content scrolls */
+      .flip-card { height: auto !important; min-height: 280px; }
+      .flip-inner { height: 100% !important; }
+      .flip-front, .flip-back { position: relative !important; backface-visibility: hidden; }
+      .flip-card .flip-inner { min-height: 280px; }
+
+      /* Image strips: hide on mobile, content goes full-width */
+      .img-strip { display: none !important; }
+      #slide-4 .max-w-6xl,
+      #slide-6 .max-w-6xl { padding-left: 0 !important; padding-right: 0 !important; }
+
+      /* Platform product cards — already grid-cols-1 sm:grid-cols-2 */
+
+      /* Phase timeline — stack vertically */
+      #slide-9 .relative > .reveal.flex.items-start.gap-8 { flex-direction: column !important; gap: 12px !important; }
+      #slide-9 .relative > .reveal.flex.items-start.gap-8 > div:first-child { text-align: left !important; padding-right: 0 !important; padding-left: 0 !important; }
+      #slide-9 .relative > .reveal.flex.items-start.gap-8 > div:last-child { padding-left: 0 !important; padding-top: 0 !important; }
+      #slide-9 .relative::before { display: none; }
+      #slide-9 .relative > .reveal.flex.items-start.gap-8 > div:nth-child(2) { align-self: flex-start; }
+
+      /* Stat cards on hero */
+      .stat-card { min-width: 120px !important; max-width: 48% !important; }
+
+      /* Attribution before/after — stack */
+      #slide-5 .grid.grid-cols-1.md\\:grid-cols-2 { grid-template-columns: 1fr !important; }
+
+      /* Portfolio cards */
+      #slide-8 .grid { gap: 12px !important; }
+
+      /* Dashboard tabs panel */
+      #slide-7 { padding: 40px 16px !important; }
+
+      /* Reduce large heading sizes */
+      h1 { font-size: clamp(2.2rem, 9vw, 5.2rem) !important; }
+      h2 { font-size: clamp(1.6rem, 5vw, 3rem) !important; }
+
+      /* CTA buttons full width on mobile */
+      #slide-9 .reveal.mt-14 div { flex-direction: column; }
+      #slide-9 .reveal.mt-14 button { width: 100%; justify-content: center; }
+
+      /* Drawer full-width on mobile */
+      #drawer { width: 100% !important; }
+
+      /* Flip hint — always visible on mobile (no hover) */
+      .flip-hint { opacity: 0.65 !important; }
+
+      /* WEP portfolio grid */
+      #slide-8 .grid.grid-cols-2 { grid-template-columns: 1fr !important; }
+    }
+
+    @media (max-width: 480px) {
+      .pill { font-size: 9px !important; padding: 3px 9px !important; }
+      .flip-front, .flip-back { padding: 20px !important; }
+      .stat-card { min-width: 100px !important; }
+    }
   </style>
 </head>
 <body>
@@ -222,7 +289,7 @@
     <!-- Salesforce product pills -->
     <div class="anim-fiu d-4 flex flex-wrap justify-center gap-2 mb-12">
       <span class="pill" style="background:rgba(36,145,235,0.2);color:#BDE3FF;border:1px solid rgba(36,145,235,0.35);">Sales Cloud</span>
-      <span class="pill" style="background:rgba(114,191,68,0.2);color:#D4F5AA;border:1px solid rgba(114,191,68,0.3);">Marketing Cloud Growth</span>
+      <span class="pill" style="background:rgba(255,122,89,0.2);color:#FFD4C5;border:1px solid rgba(255,122,89,0.3);">HubSpot + Data Cloud</span>
       <span class="pill" style="background:rgba(36,145,235,0.2);color:#BDE3FF;border:1px solid rgba(36,145,235,0.35);">Field Service</span>
       <span class="pill" style="background:rgba(242,102,65,0.2);color:#FFCCBB;border:1px solid rgba(242,102,65,0.3);">Data Cloud</span>
       <span class="pill" style="background:rgba(242,102,65,0.2);color:#FFCCBB;border:1px solid rgba(242,102,65,0.3);">Agentforce</span>
@@ -287,10 +354,10 @@
       <span style="font-size:11px;color:var(--usg-blue);font-weight:600;">Each card flips to show the direct Salesforce solution</span>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5" style="height:460px;">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
       <!-- Pain 1 -->
-      <div class="flip-card reveal" onclick="this.classList.toggle('flipped')" style="height:100%;">
+      <div class="flip-card reveal" onclick="this.classList.toggle('flipped')" style="height:340px;">
         <div class="flip-inner" style="height:100%;">
           <!-- Front -->
           <div class="flip-front" style="background:linear-gradient(135deg,var(--usg-dark),#0D3D70);box-shadow:0 4px 24px rgba(0,0,0,0.15);">
@@ -335,7 +402,7 @@
       </div>
 
       <!-- Pain 2 -->
-      <div class="flip-card reveal d-1" onclick="this.classList.toggle('flipped')" style="height:100%;">
+      <div class="flip-card reveal d-1" onclick="this.classList.toggle('flipped')" style="height:340px;">
         <div class="flip-inner" style="height:100%;">
           <div class="flip-front" style="background:linear-gradient(135deg,#3D1A8A,#6833CC);box-shadow:0 4px 24px rgba(0,0,0,0.15);">
             <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:16px;">
@@ -378,7 +445,7 @@
       </div>
 
       <!-- Pain 3 -->
-      <div class="flip-card reveal d-2" onclick="this.classList.toggle('flipped')" style="height:100%;">
+      <div class="flip-card reveal d-2" onclick="this.classList.toggle('flipped')" style="height:340px;">
         <div class="flip-inner" style="height:100%;">
           <div class="flip-front" style="background:linear-gradient(135deg,#7A3800,#C46000);box-shadow:0 4px 24px rgba(0,0,0,0.15);">
             <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:16px;">
@@ -406,21 +473,21 @@
               <svg width="16" height="16" fill="white" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
               <span style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:0.08em;">Salesforce Solution</span>
             </div>
-            <h3 style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:12px;">Marketing Cloud Growth (Native CRM)</h3>
+            <h3 style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:12px;">HubSpot + Salesforce Data Cloud</h3>
             <div class="space-y-2">
-              <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">MCG built on core CRM objects — zero handoff, zero data loss at system boundaries</p></div>
-              <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Automated Campaign Influence rollups track every event attendee through Opportunity close</p></div>
+              <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Keep HubSpot — native connector syncs HubSpot campaign &amp; event data into Salesforce in real time, zero data loss</p></div>
+              <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Data Cloud unifies HubSpot touchpoints with CRM Opportunities — Campaign Influence auto-tracks every event attendee through close</p></div>
               <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Flow-automated RFP stages with mandatory win/loss reason codes across all 150+ annual municipal bid cycles</p></div>
             </div>
             <div style="margin-top:16px;background:rgba(255,255,255,0.15);border-radius:8px;padding:10px;">
-              <p style="font-size:0.78rem;color:white;line-height:1.5;">Real-time win/loss velocity visible to leadership — no more manual stitching.</p>
+              <p style="font-size:0.78rem;color:white;line-height:1.5;">No rip and replace — closed-loop attribution on top of your existing HubSpot workflow.</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Pain 4 -->
-      <div class="flip-card reveal d-3" onclick="this.classList.toggle('flipped')" style="height:100%;">
+      <div class="flip-card reveal d-3" onclick="this.classList.toggle('flipped')" style="height:340px;">
         <div class="flip-inner" style="height:100%;">
           <div class="flip-front" style="background:linear-gradient(135deg,#0A3A5C,#0D5C8A);box-shadow:0 4px 24px rgba(0,0,0,0.15);">
             <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:16px;">
@@ -504,15 +571,15 @@
       </div>
 
       <div class="reveal d-1 glass rounded-2xl p-6 cursor-pointer hover:bg-white/10 transition-all duration-300" onclick="openDrawer('mcg')" style="border:1px solid rgba(255,255,255,0.08);">
-        <div style="width:44px;height:44px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#FF7A59,#C94B2A);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
           <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z" stroke="white" stroke-width="1.8"/><path d="M12 3v18M3 8l9 5 9-5" stroke="white" stroke-width="1.8"/></svg>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <h3 style="color:white;font-size:0.95rem;font-weight:800;">Marketing Cloud Growth</h3>
+          <h3 style="color:white;font-size:0.95rem;font-weight:800;">HubSpot Integration</h3>
           <span style="font-size:18px;color:rgba(255,255,255,0.3);">›</span>
         </div>
-        <p style="color:rgba(255,255,255,0.5);font-size:0.82rem;line-height:1.6;">Native CRM objects, Campaign Influence rollups, automated event lead scoring.</p>
-        <div class="mt-3"><span class="tag" style="background:rgba(124,58,237,0.2);color:#C4A8F5;">Attribution → Closed Loop</span></div>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.82rem;line-height:1.6;">Native HubSpot ↔ Salesforce connector. Keep your marketing workflow — add closed-loop revenue attribution.</p>
+        <div class="mt-3"><span class="tag" style="background:rgba(255,122,89,0.2);color:#FFD4C5;">HubSpot → Attribution</span></div>
       </div>
 
       <div class="reveal d-2 glass rounded-2xl p-6 cursor-pointer hover:bg-white/10 transition-all duration-300" onclick="openDrawer('field-service')" style="border:1px solid rgba(255,255,255,0.08);">
@@ -725,14 +792,14 @@
           <div style="width:32px;height:32px;background:rgba(114,191,68,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;">
             <svg width="16" height="16" fill="var(--usg-green)" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
           </div>
-          <h3 style="color:white;font-weight:800;font-size:0.95rem;margin-left:4px;">After: Marketing Cloud Growth</h3>
+          <h3 style="color:white;font-weight:800;font-size:0.95rem;margin-left:4px;">After: HubSpot + Salesforce Attribution</h3>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div class="feature-hl" style="padding:10px 12px;border-radius:8px;" onmouseenter="this.style.borderLeftColor='var(--usg-green)';this.style.background='rgba(114,191,68,0.08)';" onmouseleave="this.style.borderLeftColor='transparent';this.style.background='transparent';">
-            <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;line-height:1.55;"><strong style="color:var(--usg-green);">Native CRM objects</strong> — marketing data lives in Salesforce, zero handoff, zero data loss at system boundaries</p>
+            <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;line-height:1.55;"><strong style="color:var(--usg-green);">Keep HubSpot</strong> — native connector syncs HubSpot campaigns, contacts, and event data into Salesforce CRM in real time, zero data loss</p>
           </div>
           <div class="feature-hl" style="padding:10px 12px;border-radius:8px;" onmouseenter="this.style.borderLeftColor='var(--usg-green)';this.style.background='rgba(114,191,68,0.08)';" onmouseleave="this.style.borderLeftColor='transparent';this.style.background='transparent';">
-            <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;line-height:1.55;"><strong style="color:var(--usg-green);">Campaign Influence rollups</strong> automatically track every event attendee touchpoint through Opportunity close</p>
+            <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;line-height:1.55;"><strong style="color:var(--usg-green);">Campaign Influence rollups</strong> automatically track every HubSpot event touchpoint from first click through Opportunity close</p>
           </div>
           <div class="feature-hl" style="padding:10px 12px;border-radius:8px;" onmouseenter="this.style.borderLeftColor='var(--usg-green)';this.style.background='rgba(114,191,68,0.08)';" onmouseleave="this.style.borderLeftColor='transparent';this.style.background='transparent';">
             <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;line-height:1.55;"><strong style="color:var(--usg-green);">Flow-automated RFP stages</strong> with mandatory win/loss codes at every transition across all bid cycles</p>
@@ -1051,8 +1118,8 @@
         <div style="flex:1;padding-left:30px;">
           <div style="font-size:10px;font-weight:800;color:var(--usg-green);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">Oct → Dec 2026</div>
           <h3 style="color:white;font-size:1.05rem;font-weight:800;margin-bottom:7px;">Phase 2: Pilot Deployment</h3>
-          <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">15-crew Field Service Mobile pilot. Marketing Cloud Growth + Campaign Influence live. RFP stage flows with win/loss codes. Tableau board dashboards activated.</p>
-          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;"><span class="tag" style="background:rgba(114,191,68,0.12);color:#D4F5AA;">Field Service Pilot</span><span class="tag" style="background:rgba(114,191,68,0.12);color:#D4F5AA;">MCG Live</span><span class="tag" style="background:rgba(114,191,68,0.12);color:#D4F5AA;">Tableau Board</span></div>
+          <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;line-height:1.65;">15-crew Field Service Mobile pilot. HubSpot ↔ Salesforce connector live with Campaign Influence attribution. RFP stage flows with win/loss codes. Tableau board dashboards activated.</p>
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;"><span class="tag" style="background:rgba(114,191,68,0.12);color:#D4F5AA;">Field Service Pilot</span><span class="tag" style="background:rgba(255,122,89,0.15);color:#FFD4C5;">HubSpot Attribution Live</span><span class="tag" style="background:rgba(114,191,68,0.12);color:#D4F5AA;">Tableau Board</span></div>
         </div>
       </div>
 
@@ -1087,84 +1154,6 @@
 </section>
 
 
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!--  SLIDE 10 — MEET YOUR SALESFORCE TEAM                      -->
-<!-- ═══════════════════════════════════════════════════════════ -->
-<section id="slide-10" class="slide" style="background:linear-gradient(160deg,#C8E8F7 0%,#A8D8EF 40%,#BDE3F5 100%);padding:80px 60px;position:relative;overflow:hidden;">
-
-  <!-- Cloud decorations -->
-  <div style="position:absolute;top:8%;left:-4%;width:320px;height:140px;background:white;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;opacity:0.55;pointer-events:none;filter:blur(2px);"></div>
-  <div style="position:absolute;top:4%;left:6%;width:200px;height:100px;background:white;border-radius:50%;opacity:0.45;pointer-events:none;filter:blur(1px);"></div>
-  <div style="position:absolute;top:12%;right:5%;width:260px;height:120px;background:white;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;opacity:0.5;pointer-events:none;filter:blur(2px);"></div>
-  <div style="position:absolute;top:6%;right:15%;width:160px;height:80px;background:white;border-radius:50%;opacity:0.4;pointer-events:none;filter:blur(1px);"></div>
-  <div style="position:absolute;bottom:10%;left:10%;width:180px;height:90px;background:white;border-radius:50%;opacity:0.35;pointer-events:none;filter:blur(2px);"></div>
-
-  <div class="max-w-5xl mx-auto w-full relative z-10">
-
-    <!-- Header row -->
-    <div class="reveal flex items-start justify-between flex-wrap gap-6 mb-10">
-      <div>
-        <h2 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:var(--usg-dark);letter-spacing:-0.025em;line-height:1.1;margin-bottom:4px;">Salesforce Account Team</h2>
-        <p style="color:#4A7FA5;font-size:1rem;font-weight:500;">Your dedicated team for USG Water Solutions</p>
-      </div>
-      <!-- Logos -->
-      <div style="display:flex;align-items:center;gap:14px;background:white;padding:12px 20px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-        <img src="https://usgwater.com/wp-content/uploads/2023/10/usg-water-logo_color.svg" alt="USG Water" style="height:32px;" onerror="this.style.display='none'"/>
-        <div style="width:1px;height:28px;background:#E5E7EB;"></div>
-        <img src="https://wp.sfdcdigital.com/en-us/wp-content/uploads/sites/4/2024/11/logo-salesforce.svg" alt="Salesforce" style="height:28px;" onerror="this.outerHTML='<span style=\'font-size:1rem;font-weight:800;color:#0B2545;\'>salesforce</span>'" />
-      </div>
-    </div>
-
-    <!-- Team photo strip -->
-    <div class="reveal mb-10">
-      <img src="team.png" alt="Salesforce Account Team" style="width:100%;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);" onerror="this.style.display='none'"/>
-    </div>
-
-    <!-- Contact cards -->
-    <div class="reveal grid grid-cols-1 md:grid-cols-3 gap-5">
-
-      <!-- Hayden Florence -->
-      <div style="background:white;border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'">
-        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--usg-blue),var(--usg-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.4rem;font-weight:900;color:white;">H</div>
-        <h3 style="font-size:1.05rem;font-weight:900;color:var(--usg-dark);margin-bottom:3px;">Hayden Florence</h3>
-        <p style="font-size:0.82rem;font-weight:600;color:#4A7FA5;margin-bottom:16px;">Core Account Executive</p>
-        <a href="mailto:hflorence@salesforce.com" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 0;background:linear-gradient(135deg,var(--usg-blue),var(--usg-dark));color:white;font-size:12px;font-weight:700;border-radius:9px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          hflorence@salesforce.com
-        </a>
-      </div>
-
-      <!-- Eric Dalton -->
-      <div style="background:white;border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'">
-        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--usg-green),#4A9A1E);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.4rem;font-weight:900;color:white;">E</div>
-        <h3 style="font-size:1.05rem;font-weight:900;color:var(--usg-dark);margin-bottom:3px;">Eric Dalton</h3>
-        <p style="font-size:0.82rem;font-weight:600;color:#4A7FA5;margin-bottom:16px;">Core Solutions Engineer</p>
-        <a href="mailto:edalton@salesforce.com" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 0;background:linear-gradient(135deg,var(--usg-green),#4A9A1E);color:white;font-size:12px;font-weight:700;border-radius:9px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          edalton@salesforce.com
-        </a>
-      </div>
-
-      <!-- Justin Earls -->
-      <div style="background:white;border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);transition:transform 0.3s ease,box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'">
-        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--usg-orange),#D97706);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.4rem;font-weight:900;color:white;">J</div>
-        <h3 style="font-size:1.05rem;font-weight:900;color:var(--usg-dark);margin-bottom:3px;">Justin Earls</h3>
-        <p style="font-size:0.82rem;font-weight:600;color:#4A7FA5;margin-bottom:16px;">Regional Vice President</p>
-        <a href="mailto:jearls@salesforce.com" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px 0;background:linear-gradient(135deg,var(--usg-orange),#D97706);color:white;font-size:12px;font-weight:700;border-radius:9px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          jearls@salesforce.com
-        </a>
-      </div>
-
-    </div>
-
-    <!-- Footer note -->
-    <div class="reveal mt-8 text-center">
-      <p style="font-size:12px;color:#4A7FA5;font-weight:500;">Ready to take the next step? Reach out directly — we'll get the right conversation scheduled.</p>
-    </div>
-
-  </div>
-</section>
 
 
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -1183,7 +1172,6 @@ const SLIDES = [
   {id:'slide-7',label:'Board Dashboard'},
   {id:'slide-8',label:'M&A Portfolio'},
   {id:'slide-9',label:'Path Forward'},
-  {id:'slide-10',label:'Account Team'},
 ];
 
 /* ── Progress bar ── */
@@ -1282,20 +1270,24 @@ const drawerData={
       </div>`,
   },
   'mcg':{
-    title:'Marketing Cloud Growth',
-    color:'#7C3AED',
-    tag:'Attribution → Closed Loop',
+    title:'HubSpot Integration',
+    color:'#FF7A59',
+    tag:'Keep HubSpot · Add Closed-Loop Attribution',
     body:`
-      <p style="color:#374151;font-size:0.88rem;line-height:1.7;margin-bottom:16px;">Marketing Cloud Growth is built natively on Salesforce CRM objects — eliminating the HubSpot → Oracle data loss that currently bleeds attribution from every event and campaign.</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-        <div style="padding:10px;background:#F5F3FF;border-radius:8px;border-left:3px solid #7C3AED;"><p style="font-size:0.82rem;font-weight:700;color:#3D1A8A;margin-bottom:2px;">Native CRM Objects</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Marketing campaigns, event registrations, and lead scores live in the same Salesforce org as Opportunities — zero system boundary, zero data loss.</p></div>
-        <div style="padding:10px;background:#F5F3FF;border-radius:8px;border-left:3px solid #72BF44;"><p style="font-size:0.82rem;font-weight:700;color:#3D1A8A;margin-bottom:2px;">Campaign Influence Rollups</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Every event attendee's touchpoints are tracked through Opportunity close — automated, governed, and reportable to Warren Equity.</p></div>
-        <div style="padding:10px;background:#F5F3FF;border-radius:8px;border-left:3px solid #F26641;"><p style="font-size:0.82rem;font-weight:700;color:#3D1A8A;margin-bottom:2px;">Automated Event Lead Scoring</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">150+ annual events scored automatically using AI-driven engagement signals — no manual staff time, consistent methodology.</p></div>
-        <div style="padding:10px;background:#F5F3FF;border-radius:8px;border-left:3px solid #2491EB;"><p style="font-size:0.82rem;font-weight:700;color:#3D1A8A;margin-bottom:2px;">RFP Win/Loss Tracking</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Flow-automated RFP Opportunity stages with mandatory win/loss reason codes provide complete lifecycle visibility across all 150+ municipal bid cycles.</p></div>
+      <div style="display:flex;align-items:center;gap:8px;background:#FFF4F1;border:1px solid #FFD4C5;border-radius:8px;padding:10px 12px;margin-bottom:16px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.5-13H13v6h-1.5V7zm0 8H13v1.5h-1.5V15z" fill="#FF7A59"/></svg>
+        <p style="font-size:11px;font-weight:700;color:#C94B2A;">Not a rip-and-replace — HubSpot stays exactly as it is today.</p>
       </div>
-      <div style="background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:10px;padding:14px;">
+      <p style="color:#374151;font-size:0.88rem;line-height:1.7;margin-bottom:16px;">USG Water's team loves HubSpot, and that doesn't change. Salesforce adds a native bi-directional connector that syncs HubSpot campaign data into Salesforce CRM — closing the attribution loop without disrupting a single marketing workflow.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        <div style="padding:10px;background:#FFF4F1;border-radius:8px;border-left:3px solid #FF7A59;"><p style="font-size:0.82rem;font-weight:700;color:#7A2E0D;margin-bottom:2px;">Native HubSpot ↔ Salesforce Connector</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Real-time sync of HubSpot contacts, deal stages, campaigns, and event registrations into Salesforce CRM — no ETL, no middleware, no data loss at the system boundary.</p></div>
+        <div style="padding:10px;background:#FFF4F1;border-radius:8px;border-left:3px solid #72BF44;"><p style="font-size:0.82rem;font-weight:700;color:#7A2E0D;margin-bottom:2px;">Campaign Influence Rollups</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">HubSpot touchpoints (email opens, event attendance, form fills) are linked to Salesforce Opportunities — every event attendee is tracked from first touch through closed deal automatically.</p></div>
+        <div style="padding:10px;background:#FFF4F1;border-radius:8px;border-left:3px solid #F26641;"><p style="font-size:0.82rem;font-weight:700;color:#7A2E0D;margin-bottom:2px;">Automated Event Lead Scoring</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">HubSpot engagement scores flow into Salesforce lead records — 150+ annual events scored automatically using your existing HubSpot signals, no manual staff time.</p></div>
+        <div style="padding:10px;background:#FFF4F1;border-radius:8px;border-left:3px solid #2491EB;"><p style="font-size:0.82rem;font-weight:700;color:#7A2E0D;margin-bottom:2px;">Data Cloud Unification</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Salesforce Data Cloud merges HubSpot marketing data with Field Service, CRM Opportunities, and Snowflake telemetry — one governed revenue truth across every touchpoint.</p></div>
+      </div>
+      <div style="background:linear-gradient(135deg,#FF7A59,#C94B2A);border-radius:10px;padding:14px;">
         <p style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-bottom:5px;">PE Board Impact</p>
-        <p style="font-size:0.82rem;color:white;line-height:1.6;">Real-time win/loss velocity across all municipal bid cycles — leadership can see which events and campaigns drive closed revenue, not just leads.</p>
+        <p style="font-size:0.82rem;color:white;line-height:1.6;">Full closed-loop attribution across 150+ annual events — leadership sees which HubSpot campaigns drive closed revenue and which don't, without changing a single marketing workflow.</p>
       </div>`,
   },
   'field-service':{

@@ -172,59 +172,74 @@
     .metric-bar-wrap:hover .metric-bar-fill { filter:brightness(1.1); }
 
     /* ── Business Value Calculator ── */
-    .bvc-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
-    .bvc-inputs { display:flex; flex-direction:column; gap:18px; }
-    .bvc-slider-row { display:flex; flex-direction:column; gap:6px; }
+    /* Slider grid: 2 columns across full width */
+    .bvc-slider-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:12px 40px;
+      background:#F8FAFC; border:1px solid #E5E7EB;
+      border-radius:16px; padding:24px 28px; margin-bottom:24px;
+    }
+    .bvc-slider-row { display:flex; flex-direction:column; gap:8px; }
     .bvc-slider-label { display:flex; justify-content:space-between; align-items:center; }
     .bvc-slider-label span:first-child { font-size:12px; font-weight:700; color:#374151; }
     .bvc-slider-value {
-      font-size:13px; font-weight:900; color:var(--usg-blue);
-      background:#EFF8FF; padding:2px 9px; border-radius:6px; min-width:70px; text-align:right;
+      font-size:12px; font-weight:900; color:var(--usg-blue);
+      background:white; border:1px solid #BFDBFE;
+      padding:2px 10px; border-radius:6px; min-width:62px; text-align:right;
     }
     input[type="range"].bvc-range {
-      -webkit-appearance:none; width:100%; height:5px;
-      border-radius:3px; outline:none; cursor:pointer;
-      background:linear-gradient(90deg,var(--usg-blue) var(--pct,50%),#E5E7EB var(--pct,50%));
+      -webkit-appearance:none; width:100%; height:4px;
+      border-radius:2px; outline:none; cursor:pointer;
+      background:linear-gradient(90deg,var(--usg-blue) var(--pct,50%),#E2E8F0 var(--pct,50%));
     }
     input[type="range"].bvc-range::-webkit-slider-thumb {
-      -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
-      background:white; border:3px solid var(--usg-blue);
-      box-shadow:0 1px 4px rgba(36,145,235,0.35); cursor:pointer;
+      -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
+      background:white; border:2.5px solid var(--usg-blue);
+      box-shadow:0 1px 4px rgba(36,145,235,0.3); cursor:pointer;
     }
     input[type="range"].bvc-range::-moz-range-thumb {
-      width:18px; height:18px; border-radius:50%;
-      background:white; border:3px solid var(--usg-blue); cursor:pointer;
+      width:16px; height:16px; border-radius:50%;
+      background:white; border:2.5px solid var(--usg-blue); cursor:pointer;
     }
-    .bvc-outputs { display:flex; flex-direction:column; gap:12px; }
+
+    /* Output cards: 4 across */
+    .bvc-outputs {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;
+    }
     .bvc-out-card {
       background:white; border:1px solid #E5E7EB; border-radius:14px;
-      padding:16px 18px; display:flex; align-items:center; gap:14px;
+      padding:18px 16px; display:flex; flex-direction:column; gap:6px;
       transition:box-shadow 0.2s, border-color 0.2s;
     }
-    .bvc-out-card:hover { box-shadow:0 4px 16px rgba(36,145,235,0.1); border-color:var(--usg-blue); }
-    .bvc-out-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .bvc-out-label { font-size:11px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px; }
-    .bvc-out-val { font-size:1.35rem; font-weight:900; color:var(--usg-dark); letter-spacing:-0.02em; transition:color 0.3s; }
-    .bvc-out-sub { font-size:10px; color:#9CA3AF; margin-top:1px; }
+    .bvc-out-card:hover { box-shadow:0 4px 18px rgba(36,145,235,0.1); border-color:var(--usg-blue); }
+    .bvc-out-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-bottom:2px; }
+    .bvc-out-label { font-size:10px; font-weight:700; color:#6B7280; text-transform:uppercase; letter-spacing:0.06em; line-height:1.4; }
+    .bvc-out-val { font-size:1.45rem; font-weight:900; color:var(--usg-dark); letter-spacing:-0.025em; transition:color 0.3s; line-height:1.1; }
+    .bvc-out-sub { font-size:10px; color:#9CA3AF; line-height:1.45; margin-top:2px; }
+
+    /* Total + WEP row */
+    .bvc-bottom { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:stretch; }
     .bvc-total {
-      background:linear-gradient(135deg,var(--usg-dark),#0D3B6E);
-      border-radius:16px; padding:20px 22px; margin-top:4px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      background:linear-gradient(135deg,var(--usg-dark) 0%,#0E4080 100%);
+      border-radius:16px; padding:22px 28px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
     }
-    .bvc-total-label { font-size:11px; font-weight:700; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:0.06em; }
-    .bvc-total-val { font-size:2rem; font-weight:900; color:white; letter-spacing:-0.03em; }
+    .bvc-total-label { font-size:10px; font-weight:700; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+    .bvc-total-val { font-size:2.2rem; font-weight:900; color:white; letter-spacing:-0.035em; line-height:1; }
     .bvc-wep-toggle {
-      margin-top:10px; background:#EFF8FF; border:1px solid #BFDBFE;
-      border-radius:12px; padding:12px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer;
+      background:#EFF8FF; border:1px solid #BFDBFE;
+      border-radius:16px; padding:18px 20px; min-width:230px;
+      display:flex; flex-direction:column; justify-content:center; gap:8px; cursor:pointer;
       transition:background 0.2s;
     }
     .bvc-wep-toggle:hover { background:#DBEAFE; }
-    .bvc-wep-toggle label { font-size:12px; font-weight:700; color:var(--usg-dark); cursor:pointer; display:flex; align-items:center; gap:8px; }
-    .bvc-wep-val { font-size:13px; font-weight:900; color:var(--usg-blue); display:none; }
+    .bvc-wep-top { display:flex; align-items:center; gap:8px; }
+    .bvc-wep-top label { font-size:11px; font-weight:700; color:var(--usg-dark); cursor:pointer; }
+    .bvc-wep-val { font-size:1.1rem; font-weight:900; color:var(--usg-blue); display:none; line-height:1; }
+    .bvc-wep-sub { font-size:9.5px; color:#64748B; display:none; }
     .bvc-wep-val.visible { display:block; }
-    .bvc-pulse { animation:bvcPulse 0.4s ease; }
-    @keyframes bvcPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+    .bvc-wep-sub.visible { display:block; }
+    .bvc-pulse { animation:bvcPulse 0.35s ease; }
+    @keyframes bvcPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
     /* ── MOBILE RESPONSIVE ── */
     @media (max-width: 768px) {
@@ -1080,134 +1095,111 @@
     </p>
     <div class="cyan-line reveal" style="margin-bottom:36px;"></div>
 
-    <div class="bvc-grid reveal">
-
-      <!-- LEFT: Sliders -->
-      <div class="bvc-inputs">
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>Field Crews</span>
-            <span class="bvc-slider-value" id="v-crews">130</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-crews" min="10" max="500" value="130" oninput="calcBVC()"/>
+    <!-- Slider grid: 2 columns, full width -->
+    <div class="bvc-slider-grid reveal">
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>Field Crews</span>
+          <span class="bvc-slider-value" id="v-crews">130</span>
         </div>
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>Truck Rolls per Crew / Month</span>
-            <span class="bvc-slider-value" id="v-rolls">8</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-rolls" min="2" max="20" value="8" oninput="calcBVC()"/>
-        </div>
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>Avg Cost per Truck Roll</span>
-            <span class="bvc-slider-value" id="v-rollcost">$225</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-rollcost" min="100" max="500" value="225" oninput="calcBVC()"/>
-        </div>
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>Preventable / Redundant Truck Rolls</span>
-            <span class="bvc-slider-value" id="v-prevent">22%</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-prevent" min="5" max="50" value="22" oninput="calcBVC()"/>
-        </div>
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>Field Observations / Crew / Month (Untracked Today)</span>
-            <span class="bvc-slider-value" id="v-obs">15</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-obs" min="5" max="50" value="15" oninput="calcBVC()"/>
-        </div>
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>Avg Upsell Value per Opportunity</span>
-            <span class="bvc-slider-value" id="v-upsell">$628K</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-upsell" min="50000" max="2000000" step="10000" value="628000" oninput="calcBVC()"/>
-        </div>
-
-        <div class="bvc-slider-row">
-          <div class="bvc-slider-label">
-            <span>RFPs per Year</span>
-            <span class="bvc-slider-value" id="v-rfps">40</span>
-          </div>
-          <input type="range" class="bvc-range" id="s-rfps" min="5" max="150" value="40" oninput="calcBVC()"/>
-        </div>
-
+        <input type="range" class="bvc-range" id="s-crews" min="10" max="500" value="130" oninput="calcBVC()"/>
       </div>
-
-      <!-- RIGHT: Live outputs -->
-      <div class="bvc-outputs">
-
-        <div class="bvc-out-card">
-          <div class="bvc-out-icon" style="background:#EFF8FF;">
-            <svg width="20" height="20" fill="none" stroke="var(--usg-blue)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" stroke-linecap="round"/></svg>
-          </div>
-          <div style="flex:1;">
-            <div class="bvc-out-label">Truck Roll Savings / Year</div>
-            <div class="bvc-out-val" id="o-rolls">$0</div>
-            <div class="bvc-out-sub">Redundant dispatches eliminated by Agentforce routing</div>
-          </div>
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>Avg Cost per Truck Roll</span>
+          <span class="bvc-slider-value" id="v-rollcost">$225</span>
         </div>
-
-        <div class="bvc-out-card">
-          <div class="bvc-out-icon" style="background:#ECFDF5;">
-            <svg width="20" height="20" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div style="flex:1;">
-            <div class="bvc-out-label">Field Pipeline Recovered / Year</div>
-            <div class="bvc-out-val" id="o-pipeline" style="color:#059669;">$0</div>
-            <div class="bvc-out-sub">Observations captured as opportunities — currently $0 tracked</div>
-          </div>
+        <input type="range" class="bvc-range" id="s-rollcost" min="100" max="500" value="225" oninput="calcBVC()"/>
+      </div>
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>Truck Rolls per Crew / Month</span>
+          <span class="bvc-slider-value" id="v-rolls">8</span>
         </div>
-
-        <div class="bvc-out-card">
-          <div class="bvc-out-icon" style="background:#FFF7ED;">
-            <svg width="20" height="20" fill="none" stroke="var(--usg-orange)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div style="flex:1;">
-            <div class="bvc-out-label">RFP Revenue Recovered / Year</div>
-            <div class="bvc-out-val" id="o-rfp" style="color:var(--usg-orange);">$0</div>
-            <div class="bvc-out-sub">15% win-rate lift via Flow-automated response speed</div>
-          </div>
+        <input type="range" class="bvc-range" id="s-rolls" min="2" max="20" value="8" oninput="calcBVC()"/>
+      </div>
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>Preventable / Redundant Truck Rolls</span>
+          <span class="bvc-slider-value" id="v-prevent">22%</span>
         </div>
-
-        <div class="bvc-out-card">
-          <div class="bvc-out-icon" style="background:#F5F3FF;">
-            <svg width="20" height="20" fill="none" stroke="#7C3AED" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div style="flex:1;">
-            <div class="bvc-out-label">Work Order Time Saved / Year</div>
-            <div class="bvc-out-val" id="o-time" style="color:#7C3AED;">0 hrs</div>
-            <div class="bvc-out-sub" id="o-timeval">Field crew hours reclaimed from manual data entry</div>
-          </div>
+        <input type="range" class="bvc-range" id="s-prevent" min="5" max="50" value="22" oninput="calcBVC()"/>
+      </div>
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>Untracked Field Observations / Crew / Month</span>
+          <span class="bvc-slider-value" id="v-obs">15</span>
         </div>
-
-        <!-- Total -->
-        <div class="bvc-total">
-          <div>
-            <div class="bvc-total-label">Total Estimated Annual Value</div>
-            <div class="bvc-total-val" id="o-total">$0</div>
-          </div>
-          <svg width="36" height="36" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <input type="range" class="bvc-range" id="s-obs" min="5" max="50" value="15" oninput="calcBVC()"/>
+      </div>
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>RFPs Submitted per Year</span>
+          <span class="bvc-slider-value" id="v-rfps">40</span>
         </div>
-
-        <!-- WEP multiplier toggle -->
-        <div class="bvc-wep-toggle" onclick="toggleWEP()">
-          <label for="wep-check">
-            <input type="checkbox" id="wep-check" style="accent-color:var(--usg-blue);width:15px;height:15px;" onclick="event.stopPropagation();toggleWEP()"/>
-            Scale across all 11 Warren Equity portfolio companies
-          </label>
-          <div class="bvc-wep-val" id="o-wep">$0</div>
+        <input type="range" class="bvc-range" id="s-rfps" min="5" max="150" value="40" oninput="calcBVC()"/>
+      </div>
+      <div class="bvc-slider-row">
+        <div class="bvc-slider-label">
+          <span>Avg Contract / Upsell Value</span>
+          <span class="bvc-slider-value" id="v-upsell">$628K</span>
         </div>
+        <input type="range" class="bvc-range" id="s-upsell" min="50000" max="2000000" step="10000" value="628000" oninput="calcBVC()"/>
+      </div>
+    </div>
 
+    <!-- Output cards: 4 across -->
+    <div class="bvc-outputs reveal">
+      <div class="bvc-out-card">
+        <div class="bvc-out-icon" style="background:#EFF8FF;">
+          <svg width="18" height="18" fill="none" stroke="var(--usg-blue)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bvc-out-label">Truck Roll Savings / Year</div>
+        <div class="bvc-out-val" id="o-rolls" style="color:var(--usg-blue);">$0</div>
+        <div class="bvc-out-sub">Redundant dispatches eliminated by Agentforce smart routing</div>
+      </div>
+      <div class="bvc-out-card">
+        <div class="bvc-out-icon" style="background:#ECFDF5;">
+          <svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="bvc-out-label">Field Pipeline Recovered / Year</div>
+        <div class="bvc-out-val" id="o-pipeline" style="color:#059669;">$0</div>
+        <div class="bvc-out-sub">Observations turned into opportunities — currently $0 tracked</div>
+      </div>
+      <div class="bvc-out-card">
+        <div class="bvc-out-icon" style="background:#FFF7ED;">
+          <svg width="18" height="18" fill="none" stroke="var(--usg-orange)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="bvc-out-label">RFP Revenue Recovered / Year</div>
+        <div class="bvc-out-val" id="o-rfp" style="color:var(--usg-orange);">$0</div>
+        <div class="bvc-out-sub">15% win-rate lift via Flow-automated response speed</div>
+      </div>
+      <div class="bvc-out-card">
+        <div class="bvc-out-icon" style="background:#F5F3FF;">
+          <svg width="18" height="18" fill="none" stroke="#7C3AED" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="bvc-out-label">Work Order Time Saved / Year</div>
+        <div class="bvc-out-val" id="o-time" style="color:#7C3AED;">0 hrs</div>
+        <div class="bvc-out-sub" id="o-timeval">Field crew hours reclaimed from manual data entry</div>
+      </div>
+    </div>
+
+    <!-- Total + WEP toggle -->
+    <div class="bvc-bottom reveal">
+      <div class="bvc-total">
+        <div>
+          <div class="bvc-total-label">Total Estimated Annual Value</div>
+          <div class="bvc-total-val" id="o-total">$0</div>
+        </div>
+        <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div class="bvc-wep-toggle" onclick="toggleWEP()">
+        <div class="bvc-wep-top">
+          <input type="checkbox" id="wep-check" style="accent-color:var(--usg-blue);width:14px;height:14px;cursor:pointer;" onclick="event.stopPropagation();toggleWEP()"/>
+          <label for="wep-check" style="font-size:11px;font-weight:700;color:var(--usg-dark);cursor:pointer;line-height:1.35;">Scale across all 11 Warren Equity<br/>portfolio companies</label>
+        </div>
+        <div class="bvc-wep-val" id="o-wep">$0</div>
+        <div class="bvc-wep-sub" id="o-wep-sub">combined platform value</div>
       </div>
     </div>
   </div>
@@ -1676,16 +1668,18 @@ function calcBVC() {
   setVal('o-total', fmt(total));
 
   // WEP multiplier
-  const wepEl = document.getElementById('o-wep');
-  wepEl.textContent = fmt(wepTotal) + ' across 11 WEP companies';
-  if(document.getElementById('wep-check').checked) wepEl.classList.add('visible');
+  const wepEl  = document.getElementById('o-wep');
+  const wepSub = document.getElementById('o-wep-sub');
+  wepEl.textContent = fmt(wepTotal);
+  const checked = document.getElementById('wep-check').checked;
+  wepEl.classList.toggle('visible', checked);
+  wepSub.classList.toggle('visible', checked);
 }
 
 function toggleWEP() {
   const chk = document.getElementById('wep-check');
   chk.checked = !chk.checked;
-  const wepEl = document.getElementById('o-wep');
-  wepEl.classList.toggle('visible', chk.checked);
+  calcBVC();
 }
 
 // Initialize on load

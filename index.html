@@ -241,6 +241,44 @@
     .bvc-pulse { animation:bvcPulse 0.35s ease; }
     @keyframes bvcPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
+    /* Co-brand header lockup */
+    .bvc-header-row { display:grid; grid-template-columns:1fr auto; gap:32px; align-items:flex-start; margin-bottom:36px; }
+    .co-brand-lockup {
+      display:flex; align-items:center; gap:14px;
+      background:#EFF8FF; border:1px solid #BFDBFE;
+      border-radius:18px; padding:18px 24px;
+    }
+    .co-brand-lockup img { display:block; }
+    .co-brand-x { font-size:18px; font-weight:900; color:#BFDBFE; }
+
+    /* Tab strip */
+    .bvc-tabs { display:flex; gap:6px; margin-bottom:20px; background:#F1F5F9; border-radius:12px; padding:5px; }
+    .bvc-tab-btn {
+      flex:1; padding:9px 8px; border:none; border-radius:8px; cursor:pointer;
+      font-size:11px; font-weight:700; letter-spacing:0.02em; transition:all 0.2s;
+      background:transparent; color:#64748B; white-space:nowrap;
+    }
+    .bvc-tab-btn.active { background:var(--usg-blue); color:white; box-shadow:0 2px 8px rgba(36,145,235,0.25); }
+    .bvc-tab-btn:hover:not(.active) { background:white; color:var(--usg-dark); }
+
+    /* Tab panels */
+    .bvc-tab-panel { display:none; }
+    .bvc-tab-panel.active { display:block; }
+
+    /* 2-col outputs (for tabs with 2 output cards) */
+    .bvc-outputs-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+
+    /* Breakdown pills below total */
+    .bvc-breakdown {
+      display:flex; flex-wrap:wrap; gap:6px; padding:10px 28px;
+      border-top:1px solid rgba(255,255,255,0.08);
+    }
+    .bvc-bd-pill {
+      font-size:10px; font-weight:700; color:rgba(255,255,255,0.6);
+      background:rgba(255,255,255,0.07); border-radius:5px; padding:2px 8px;
+    }
+    .bvc-bd-pill span { color:rgba(255,255,255,0.9); }
+
     /* ── MOBILE RESPONSIVE ── */
     @media (max-width: 768px) {
       /* Sidebar hidden on mobile */
@@ -1081,114 +1119,216 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!--  SLIDE BVC — BUSINESS VALUE CALCULATOR                    -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<section id="slide-bvc" class="slide" style="background:white;padding:80px 60px;">
+<section id="slide-bvc" class="slide" style="background:white;padding:72px 60px;">
   <div class="max-w-6xl mx-auto w-full">
 
-    <div class="reveal mb-2">
-      <span class="pill" style="background:#EFF8FF;color:var(--usg-dark);border:1px solid #BFDBFE;">ROI Calculator</span>
-    </div>
-    <h2 class="reveal" style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:var(--usg-dark);letter-spacing:-0.025em;line-height:1.1;margin-bottom:8px;">
-      Your Business Value<br/><span style="color:var(--usg-blue);">with Salesforce</span>
-    </h2>
-    <p class="reveal" style="color:#64748B;font-size:0.9rem;max-width:580px;line-height:1.65;margin-bottom:6px;">
-      Adjust the sliders to match your operation. Every number updates in real time.
-    </p>
-    <div class="cyan-line reveal" style="margin-bottom:36px;"></div>
-
-    <!-- Slider grid: 2 columns, full width -->
-    <div class="bvc-slider-grid reveal">
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>Field Crews</span>
-          <span class="bvc-slider-value" id="v-crews">130</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-crews" min="10" max="500" value="130" oninput="calcBVC()"/>
+    <!-- Header row: heading left, co-brand lockup right -->
+    <div class="bvc-header-row reveal">
+      <div>
+        <div class="mb-2"><span class="pill" style="background:#EFF8FF;color:var(--usg-dark);border:1px solid #BFDBFE;">ROI Calculator</span></div>
+        <h2 style="font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;color:var(--usg-dark);letter-spacing:-0.025em;line-height:1.1;margin-bottom:8px;">
+          Your Business Value<br/><span style="color:var(--usg-blue);">with Salesforce</span>
+        </h2>
+        <p style="color:#64748B;font-size:0.9rem;max-width:520px;line-height:1.65;margin-bottom:14px;">
+          Adjust the sliders in each category. Your total value builds as you explore all five.
+        </p>
+        <div class="cyan-line"></div>
       </div>
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>Avg Cost per Truck Roll</span>
-          <span class="bvc-slider-value" id="v-rollcost">$225</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-rollcost" min="100" max="500" value="225" oninput="calcBVC()"/>
-      </div>
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>Truck Rolls per Crew / Month</span>
-          <span class="bvc-slider-value" id="v-rolls">8</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-rolls" min="2" max="20" value="8" oninput="calcBVC()"/>
-      </div>
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>Preventable / Redundant Truck Rolls</span>
-          <span class="bvc-slider-value" id="v-prevent">22%</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-prevent" min="5" max="50" value="22" oninput="calcBVC()"/>
-      </div>
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>Untracked Field Observations / Crew / Month</span>
-          <span class="bvc-slider-value" id="v-obs">15</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-obs" min="5" max="50" value="15" oninput="calcBVC()"/>
-      </div>
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>RFPs Submitted per Year</span>
-          <span class="bvc-slider-value" id="v-rfps">40</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-rfps" min="5" max="150" value="40" oninput="calcBVC()"/>
-      </div>
-      <div class="bvc-slider-row">
-        <div class="bvc-slider-label">
-          <span>Avg Contract / Upsell Value</span>
-          <span class="bvc-slider-value" id="v-upsell">$628K</span>
-        </div>
-        <input type="range" class="bvc-range" id="s-upsell" min="50000" max="2000000" step="10000" value="628000" oninput="calcBVC()"/>
+      <div class="co-brand-lockup">
+        <img src="https://usgwater.com/wp-content/uploads/2023/10/usg-water-logo_white@0.5x.png" alt="USG Water" style="height:36px;filter:invert(1) sepia(1) saturate(2) hue-rotate(185deg) brightness(0.6);" onerror="this.style.display='none'"/>
+        <span class="co-brand-x">×</span>
+        <img src="https://wp.sfdcdigital.com/en-us/wp-content/uploads/sites/4/2024/11/logo-salesforce.svg" alt="Salesforce" style="height:28px;"/>
       </div>
     </div>
 
-    <!-- Output cards: 4 across -->
-    <div class="bvc-outputs reveal">
-      <div class="bvc-out-card">
-        <div class="bvc-out-icon" style="background:#EFF8FF;">
-          <svg width="18" height="18" fill="none" stroke="var(--usg-blue)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" stroke-linecap="round"/></svg>
+    <!-- Tab strip -->
+    <div class="bvc-tabs reveal">
+      <button class="bvc-tab-btn active" onclick="setTab(1)">Field Operations</button>
+      <button class="bvc-tab-btn" onclick="setTab(2)">Asset Intelligence</button>
+      <button class="bvc-tab-btn" onclick="setTab(3)">Revenue Growth</button>
+      <button class="bvc-tab-btn" onclick="setTab(4)">Platform ROI</button>
+      <button class="bvc-tab-btn" onclick="setTab(5)">M&amp;A &amp; Scale</button>
+    </div>
+
+    <!-- ── TAB 1: Field Operations ── -->
+    <div class="bvc-tab-panel active" data-tab="1">
+      <div class="bvc-slider-grid">
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Field Crews</span><span class="bvc-slider-value" id="v-crews">130</span></div>
+          <input type="range" class="bvc-range" id="s-crews" min="10" max="500" value="130" oninput="calcTab(1)"/>
         </div>
-        <div class="bvc-out-label">Truck Roll Savings / Year</div>
-        <div class="bvc-out-val" id="o-rolls" style="color:var(--usg-blue);">$0</div>
-        <div class="bvc-out-sub">Redundant dispatches eliminated by Agentforce smart routing</div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Avg Cost per Truck Roll</span><span class="bvc-slider-value" id="v-rollcost">$225</span></div>
+          <input type="range" class="bvc-range" id="s-rollcost" min="100" max="500" value="225" oninput="calcTab(1)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Truck Rolls per Crew / Month</span><span class="bvc-slider-value" id="v-rolls">8</span></div>
+          <input type="range" class="bvc-range" id="s-rolls" min="2" max="20" value="8" oninput="calcTab(1)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Preventable / Redundant Truck Rolls</span><span class="bvc-slider-value" id="v-prevent">22%</span></div>
+          <input type="range" class="bvc-range" id="s-prevent" min="5" max="50" value="22" oninput="calcTab(1)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Untracked Field Observations / Crew / Month</span><span class="bvc-slider-value" id="v-obs">15</span></div>
+          <input type="range" class="bvc-range" id="s-obs" min="5" max="50" value="15" oninput="calcTab(1)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>RFPs Submitted per Year</span><span class="bvc-slider-value" id="v-rfps">40</span></div>
+          <input type="range" class="bvc-range" id="s-rfps" min="5" max="150" value="40" oninput="calcTab(1)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Avg Contract / Upsell Value</span><span class="bvc-slider-value" id="v-upsell">$628K</span></div>
+          <input type="range" class="bvc-range" id="s-upsell" min="50000" max="2000000" step="10000" value="628000" oninput="calcTab(1)"/>
+        </div>
       </div>
-      <div class="bvc-out-card">
-        <div class="bvc-out-icon" style="background:#ECFDF5;">
-          <svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="bvc-outputs">
+        <div class="bvc-out-card">
+          <div class="bvc-out-icon" style="background:#EFF8FF;"><svg width="18" height="18" fill="none" stroke="var(--usg-blue)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01" stroke-linecap="round"/></svg></div>
+          <div class="bvc-out-label">Truck Roll Savings / Year</div>
+          <div class="bvc-out-val" id="o-rolls" style="color:var(--usg-blue);">$0</div>
+          <div class="bvc-out-sub">Redundant dispatches eliminated by Agentforce routing</div>
         </div>
-        <div class="bvc-out-label">Field Pipeline Recovered / Year</div>
-        <div class="bvc-out-val" id="o-pipeline" style="color:#059669;">$0</div>
-        <div class="bvc-out-sub">Observations turned into opportunities — currently $0 tracked</div>
-      </div>
-      <div class="bvc-out-card">
-        <div class="bvc-out-icon" style="background:#FFF7ED;">
-          <svg width="18" height="18" fill="none" stroke="var(--usg-orange)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="bvc-out-card">
+          <div class="bvc-out-icon" style="background:#ECFDF5;"><svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">Field Pipeline Recovered / Year</div>
+          <div class="bvc-out-val" id="o-pipeline" style="color:#059669;">$0</div>
+          <div class="bvc-out-sub">Observations captured as opportunities — currently $0 tracked</div>
         </div>
-        <div class="bvc-out-label">RFP Revenue Recovered / Year</div>
-        <div class="bvc-out-val" id="o-rfp" style="color:var(--usg-orange);">$0</div>
-        <div class="bvc-out-sub">15% win-rate lift via Flow-automated response speed</div>
-      </div>
-      <div class="bvc-out-card">
-        <div class="bvc-out-icon" style="background:#F5F3FF;">
-          <svg width="18" height="18" fill="none" stroke="#7C3AED" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="bvc-out-card">
+          <div class="bvc-out-icon" style="background:#FFF7ED;"><svg width="18" height="18" fill="none" stroke="var(--usg-orange)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">RFP Revenue Recovered / Year</div>
+          <div class="bvc-out-val" id="o-rfp" style="color:var(--usg-orange);">$0</div>
+          <div class="bvc-out-sub">15% win-rate lift via Flow-automated response speed</div>
         </div>
-        <div class="bvc-out-label">Work Order Time Saved / Year</div>
-        <div class="bvc-out-val" id="o-time" style="color:#7C3AED;">0 hrs</div>
-        <div class="bvc-out-sub" id="o-timeval">Field crew hours reclaimed from manual data entry</div>
+        <div class="bvc-out-card">
+          <div class="bvc-out-icon" style="background:#F5F3FF;"><svg width="18" height="18" fill="none" stroke="#7C3AED" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">Work Order Time Saved / Year</div>
+          <div class="bvc-out-val" id="o-time" style="color:#7C3AED;">0 hrs</div>
+          <div class="bvc-out-sub" id="o-timeval">Field crew hours reclaimed from manual data entry</div>
+        </div>
       </div>
     </div>
 
-    <!-- Total + WEP toggle -->
+    <!-- ── TAB 2: Asset Intelligence ── -->
+    <div class="bvc-tab-panel" data-tab="2">
+      <div class="bvc-slider-grid">
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Total Assets Managed</span><span class="bvc-slider-value" id="v-assets">850</span></div>
+          <input type="range" class="bvc-range" id="s-assets" min="100" max="5000" value="850" oninput="calcTab(2)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Avg Cost per Asset Renovation</span><span class="bvc-slider-value" id="v-renocost">$45K</span></div>
+          <input type="range" class="bvc-range" id="s-renocost" min="10000" max="200000" step="1000" value="45000" oninput="calcTab(2)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Renovation Cycle Extension (Years)</span><span class="bvc-slider-value" id="v-renoext">+2 yrs</span></div>
+          <input type="range" class="bvc-range" id="s-renoext" min="1" max="5" value="2" oninput="calcTab(2)"/>
+        </div>
+      </div>
+      <div class="bvc-outputs-2">
+        <div class="bvc-out-card" style="grid-column:span 2;">
+          <div class="bvc-out-icon" style="background:#ECFDF5;"><svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">CapEx Deferral Savings / Year</div>
+          <div class="bvc-out-val" id="o-capex" style="color:#059669;">$0</div>
+          <div class="bvc-out-sub">Claude AI optimizes renovation schedules — extending asset life from 5-year to 7-year cycles via condition-based digital twins</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 3: Revenue Growth ── -->
+    <div class="bvc-tab-panel" data-tab="3">
+      <div class="bvc-slider-grid">
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Current Annual Cross-Sell Pipeline</span><span class="bvc-slider-value" id="v-cspipeline">$8M</span></div>
+          <input type="range" class="bvc-range" id="s-cspipeline" min="1000000" max="50000000" step="500000" value="8000000" oninput="calcTab(3)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Targeted Win Rate Lift</span><span class="bvc-slider-value" id="v-wrlift">15%</span></div>
+          <input type="range" class="bvc-range" id="s-wrlift" min="5" max="40" value="15" oninput="calcTab(3)"/>
+        </div>
+      </div>
+      <div class="bvc-outputs-2">
+        <div class="bvc-out-card" style="grid-column:span 2;">
+          <div class="bvc-out-icon" style="background:#FFF7ED;"><svg width="18" height="18" fill="none" stroke="var(--usg-orange)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">Cross-Sell Revenue Lift / Year</div>
+          <div class="bvc-out-val" id="o-cslift" style="color:var(--usg-orange);">$0</div>
+          <div class="bvc-out-sub">Data Cloud unifies HubSpot + Oracle + Field Service data — giving sales reps a complete account picture and lifting cross-sell win rates</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 4: Platform ROI ── -->
+    <div class="bvc-tab-panel" data-tab="4">
+      <div class="bvc-slider-grid">
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Annual Legacy System Maintenance Spend</span><span class="bvc-slider-value" id="v-maint">$420K</span></div>
+          <input type="range" class="bvc-range" id="s-maint" min="50000" max="2000000" step="10000" value="420000" oninput="calcTab(4)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Employees Reconciling Data Across Platforms</span><span class="bvc-slider-value" id="v-recon-emp">8</span></div>
+          <input type="range" class="bvc-range" id="s-recon-emp" min="1" max="50" value="8" oninput="calcTab(4)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Hours / Week Spent per Employee</span><span class="bvc-slider-value" id="v-recon-hrs">6 hrs</span></div>
+          <input type="range" class="bvc-range" id="s-recon-hrs" min="1" max="20" value="6" oninput="calcTab(4)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Annual Field Inventory / Parts Spend</span><span class="bvc-slider-value" id="v-invspend">$2.4M</span></div>
+          <input type="range" class="bvc-range" id="s-invspend" min="100000" max="20000000" step="100000" value="2400000" oninput="calcTab(4)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Estimated Inventory Leakage (% of Spend)</span><span class="bvc-slider-value" id="v-invleak">12%</span></div>
+          <input type="range" class="bvc-range" id="s-invleak" min="3" max="30" value="12" oninput="calcTab(4)"/>
+        </div>
+      </div>
+      <div class="bvc-outputs-2">
+        <div class="bvc-out-card">
+          <div class="bvc-out-icon" style="background:#EFF8FF;"><svg width="18" height="18" fill="none" stroke="var(--usg-blue)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">IT Consolidation Savings / Year</div>
+          <div class="bvc-out-val" id="o-itconsolid" style="color:var(--usg-blue);">$0</div>
+          <div class="bvc-out-sub">40% reduction on Oracle + HubSpot maintenance costs after Salesforce consolidation</div>
+        </div>
+        <div class="bvc-out-card">
+          <div class="bvc-out-icon" style="background:#F5F3FF;"><svg width="18" height="18" fill="none" stroke="#7C3AED" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">Productivity + Inventory Reclaimed / Year</div>
+          <div class="bvc-out-val" id="o-prodreclaim" style="color:#7C3AED;">$0</div>
+          <div class="bvc-out-sub" id="o-prodreclaim-sub">Data reconciliation hours eliminated + inventory leakage plugged</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 5: M&A & Scale ── -->
+    <div class="bvc-tab-panel" data-tab="5">
+      <div class="bvc-slider-grid">
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Projected Acquisitions per Year</span><span class="bvc-slider-value" id="v-acqs">2</span></div>
+          <input type="range" class="bvc-range" id="s-acqs" min="1" max="10" value="2" oninput="calcTab(5)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>IT / Admin Hours to Onboard One Acquisition</span><span class="bvc-slider-value" id="v-acq-hrs">1,200</span></div>
+          <input type="range" class="bvc-range" id="s-acq-hrs" min="200" max="5000" step="50" value="1200" oninput="calcTab(5)"/>
+        </div>
+        <div class="bvc-slider-row">
+          <div class="bvc-slider-label"><span>Avg IT Hourly Rate</span><span class="bvc-slider-value" id="v-acq-rate">$125</span></div>
+          <input type="range" class="bvc-range" id="s-acq-rate" min="75" max="250" value="125" oninput="calcTab(5)"/>
+        </div>
+      </div>
+      <div class="bvc-outputs-2">
+        <div class="bvc-out-card" style="grid-column:span 2;">
+          <div class="bvc-out-icon" style="background:#ECFDF5;"><svg width="18" height="18" fill="none" stroke="#059669" stroke-width="2.2" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="bvc-out-label">Acquisition Onboarding Savings / Year</div>
+          <div class="bvc-out-val" id="o-macq" style="color:#059669;">$0</div>
+          <div class="bvc-out-sub">60% onboarding effort reduction via the Warren Equity Salesforce Standard playbook — pre-built integrations, data models, and governance already in place</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total + WEP (always visible) -->
     <div class="bvc-bottom reveal">
       <div class="bvc-total">
         <div>
-          <div class="bvc-total-label">Total Estimated Annual Value</div>
+          <div class="bvc-total-label">Combined Value Across All Categories</div>
           <div class="bvc-total-val" id="o-total">$0</div>
         </div>
         <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -1199,9 +1339,19 @@
           <label for="wep-check" style="font-size:11px;font-weight:700;color:var(--usg-dark);cursor:pointer;line-height:1.35;">Scale across all 11 Warren Equity<br/>portfolio companies</label>
         </div>
         <div class="bvc-wep-val" id="o-wep">$0</div>
-        <div class="bvc-wep-sub" id="o-wep-sub">combined platform value</div>
+        <div class="bvc-wep-sub" id="o-wep-sub">combined portfolio value</div>
       </div>
     </div>
+
+    <!-- Breakdown pills -->
+    <div class="bvc-breakdown reveal" id="bvc-breakdown" style="margin-top:0;background:linear-gradient(135deg,var(--usg-dark) 0%,#0E4080 100%);border-radius:0 0 16px 16px;margin-top:-8px;padding-top:0;padding-bottom:10px;">
+      <span class="bvc-bd-pill">Field Ops: <span id="bd-1">$0</span></span>
+      <span class="bvc-bd-pill">Asset Intel: <span id="bd-2">$0</span></span>
+      <span class="bvc-bd-pill">Revenue: <span id="bd-3">$0</span></span>
+      <span class="bvc-bd-pill">Platform ROI: <span id="bd-4">$0</span></span>
+      <span class="bvc-bd-pill">M&amp;A: <span id="bd-5">$0</span></span>
+    </div>
+
   </div>
 </section>
 
@@ -1607,9 +1757,11 @@ function renderWinLossChart(){
 /* ══════════════════════════════════════
    BUSINESS VALUE CALCULATOR
 ══════════════════════════════════════ */
-const fmt = (n) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
+const fmt  = (n) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
 const fmtK = (n) => n >= 1000000 ? '$' + (n/1000000).toFixed(1) + 'M' : n >= 1000 ? '$' + Math.round(n/1000) + 'K' : fmt(n);
-const fmtPct = (n) => n + '%';
+
+const tabTotals = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+let activeTab = 1;
 
 function updateSliderTrack(el) {
   const min = +el.min, max = +el.max, val = +el.value;
@@ -1617,77 +1769,172 @@ function updateSliderTrack(el) {
   el.style.setProperty('--pct', pct + '%');
 }
 
-function calcBVC() {
-  const crews    = +document.getElementById('s-crews').value;
-  const rolls    = +document.getElementById('s-rolls').value;
-  const rollcost = +document.getElementById('s-rollcost').value;
-  const prevent  = +document.getElementById('s-prevent').value / 100;
-  const obs      = +document.getElementById('s-obs').value;
-  const upsell   = +document.getElementById('s-upsell').value;
-  const rfps     = +document.getElementById('s-rfps').value;
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = val;
+  el.classList.remove('bvc-pulse');
+  void el.offsetWidth;
+  el.classList.add('bvc-pulse');
+}
 
-  // Update display labels
-  document.getElementById('v-crews').textContent    = crews;
-  document.getElementById('v-rolls').textContent    = rolls;
-  document.getElementById('v-rollcost').textContent = '$' + rollcost;
-  document.getElementById('v-prevent').textContent  = Math.round(prevent * 100) + '%';
-  document.getElementById('v-obs').textContent      = obs;
-  document.getElementById('v-upsell').textContent   = fmtK(upsell);
-  document.getElementById('v-rfps').textContent     = rfps;
-
-  // Update slider track fill
-  ['s-crews','s-rolls','s-rollcost','s-prevent','s-obs','s-upsell','s-rfps'].forEach(id => {
-    updateSliderTrack(document.getElementById(id));
+function setTab(n) {
+  activeTab = n;
+  document.querySelectorAll('.bvc-tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i + 1 === n);
   });
+  document.querySelectorAll('.bvc-tab-panel').forEach(panel => {
+    panel.classList.toggle('active', +panel.dataset.tab === n);
+  });
+  calcTab(n);
+}
 
-  // Calculations
-  const truckSavings   = crews * rolls * rollcost * prevent * 12;
-  const pipelineRecov  = crews * obs * 0.05 * upsell * 12;  // 5% capture rate with Salesforce
-  const rfpRecovery    = rfps * upsell * 0.15;               // 15% win-rate lift
-  const hoursPerYear   = crews * 4 * 12;                     // 4 hrs/crew/month of manual entry eliminated
-  const timeDollar     = hoursPerYear * 85;                  // $85/hr blended field rate
+function calcTab(n) {
+  if (n === 1) {
+    const crews    = +document.getElementById('s-crews').value;
+    const rolls    = +document.getElementById('s-rolls').value;
+    const rollcost = +document.getElementById('s-rollcost').value;
+    const prevent  = +document.getElementById('s-prevent').value / 100;
+    const obs      = +document.getElementById('s-obs').value;
+    const upsell   = +document.getElementById('s-upsell').value;
+    const rfps     = +document.getElementById('s-rfps').value;
 
-  const total = truckSavings + pipelineRecov + rfpRecovery + timeDollar;
-  const wepTotal = total * 11;
+    document.getElementById('v-crews').textContent    = crews;
+    document.getElementById('v-rolls').textContent    = rolls;
+    document.getElementById('v-rollcost').textContent = '$' + rollcost;
+    document.getElementById('v-prevent').textContent  = Math.round(prevent * 100) + '%';
+    document.getElementById('v-obs').textContent      = obs;
+    document.getElementById('v-upsell').textContent   = fmtK(upsell);
+    document.getElementById('v-rfps').textContent     = rfps;
 
-  // Update output cards with pulse animation
-  function setVal(id, val) {
-    const el = document.getElementById(id);
-    el.textContent = val;
-    el.classList.remove('bvc-pulse');
-    void el.offsetWidth; // reflow
-    el.classList.add('bvc-pulse');
+    ['s-crews','s-rolls','s-rollcost','s-prevent','s-obs','s-upsell','s-rfps'].forEach(id => updateSliderTrack(document.getElementById(id)));
+
+    const truckSavings  = crews * rolls * rollcost * prevent * 12;
+    const pipelineRecov = crews * obs * 0.05 * upsell * 12;
+    const rfpRecovery   = rfps * upsell * 0.15;
+    const hoursPerYear  = crews * 4 * 12;
+    const timeDollar    = hoursPerYear * 85;
+
+    setVal('o-rolls',    fmt(truckSavings));
+    setVal('o-pipeline', fmt(pipelineRecov));
+    setVal('o-rfp',      fmt(rfpRecovery));
+    setVal('o-time',     hoursPerYear.toLocaleString() + ' hrs');
+    document.getElementById('o-timeval').textContent =
+      fmt(timeDollar) + ' in reclaimed field crew time (' + hoursPerYear.toLocaleString() + ' hrs × $85/hr)';
+
+    tabTotals[1] = truckSavings + pipelineRecov + rfpRecovery + timeDollar;
+
+  } else if (n === 2) {
+    const assets   = +document.getElementById('s-assets').value;
+    const renocost = +document.getElementById('s-renocost').value;
+    const renoext  = +document.getElementById('s-renoext').value;
+    const baseCycle = 5;
+
+    document.getElementById('v-assets').textContent   = assets.toLocaleString();
+    document.getElementById('v-renocost').textContent = fmtK(renocost);
+    document.getElementById('v-renoext').textContent  = '+' + renoext + ' yrs';
+
+    ['s-assets','s-renocost','s-renoext'].forEach(id => updateSliderTrack(document.getElementById(id)));
+
+    const capex = assets * renocost / (baseCycle + renoext) * renoext / baseCycle;
+    setVal('o-capex', fmt(capex));
+    tabTotals[2] = capex;
+
+  } else if (n === 3) {
+    const pipeline = +document.getElementById('s-cspipeline').value;
+    const wrlift   = +document.getElementById('s-wrlift').value / 100;
+
+    document.getElementById('v-cspipeline').textContent = fmtK(pipeline);
+    document.getElementById('v-wrlift').textContent     = Math.round(wrlift * 100) + '%';
+
+    ['s-cspipeline','s-wrlift'].forEach(id => updateSliderTrack(document.getElementById(id)));
+
+    const cslift = pipeline * wrlift;
+    setVal('o-cslift', fmt(cslift));
+    tabTotals[3] = cslift;
+
+  } else if (n === 4) {
+    const maint      = +document.getElementById('s-maint').value;
+    const reconEmp   = +document.getElementById('s-recon-emp').value;
+    const reconHrs   = +document.getElementById('s-recon-hrs').value;
+    const invspend   = +document.getElementById('s-invspend').value;
+    const invleak    = +document.getElementById('s-invleak').value / 100;
+
+    document.getElementById('v-maint').textContent      = fmtK(maint);
+    document.getElementById('v-recon-emp').textContent  = reconEmp;
+    document.getElementById('v-recon-hrs').textContent  = reconHrs + ' hrs';
+    document.getElementById('v-invspend').textContent   = fmtK(invspend);
+    document.getElementById('v-invleak').textContent    = Math.round(invleak * 100) + '%';
+
+    ['s-maint','s-recon-emp','s-recon-hrs','s-invspend','s-invleak'].forEach(id => updateSliderTrack(document.getElementById(id)));
+
+    const itConsolid   = maint * 0.40;
+    const prodHrsSaved = reconEmp * reconHrs * 52 * 85;
+    const invSavings   = invspend * invleak;
+    const prodReclaim  = prodHrsSaved + invSavings;
+
+    setVal('o-itconsolid',   fmt(itConsolid));
+    setVal('o-prodreclaim',  fmt(prodReclaim));
+    document.getElementById('o-prodreclaim-sub').textContent =
+      fmt(prodHrsSaved) + ' in data reconciliation time + ' + fmt(invSavings) + ' inventory leakage recovered';
+
+    tabTotals[4] = itConsolid + prodReclaim;
+
+  } else if (n === 5) {
+    const acqs    = +document.getElementById('s-acqs').value;
+    const acqHrs  = +document.getElementById('s-acq-hrs').value;
+    const acqRate = +document.getElementById('s-acq-rate').value;
+
+    document.getElementById('v-acqs').textContent     = acqs;
+    document.getElementById('v-acq-hrs').textContent  = acqHrs.toLocaleString();
+    document.getElementById('v-acq-rate').textContent = '$' + acqRate;
+
+    ['s-acqs','s-acq-hrs','s-acq-rate'].forEach(id => updateSliderTrack(document.getElementById(id)));
+
+    const macq = acqs * acqHrs * acqRate * 0.60;
+    setVal('o-macq', fmt(macq));
+    tabTotals[5] = macq;
   }
 
-  setVal('o-rolls',    fmt(truckSavings));
-  setVal('o-pipeline', fmt(pipelineRecov));
-  setVal('o-rfp',      fmt(rfpRecovery));
-  setVal('o-time',     hoursPerYear.toLocaleString() + ' hrs');
-  document.getElementById('o-timeval').textContent =
-    fmt(timeDollar) + ' in reclaimed field crew time (' + hoursPerYear.toLocaleString() + ' hrs × $85/hr)';
+  updateGrandTotal();
+}
+
+function updateGrandTotal() {
+  const total    = Object.values(tabTotals).reduce((a, b) => a + b, 0);
+  const wepTotal = total * 11;
+
   setVal('o-total', fmt(total));
 
-  // WEP multiplier
+  // Breakdown pills
+  const labels = { 1:'bd-1', 2:'bd-2', 3:'bd-3', 4:'bd-4', 5:'bd-5' };
+  for (const [k, id] of Object.entries(labels)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = fmtK(tabTotals[k]);
+  }
+
+  // WEP toggle
   const wepEl  = document.getElementById('o-wep');
   const wepSub = document.getElementById('o-wep-sub');
-  wepEl.textContent = fmt(wepTotal);
+  if (wepEl) wepEl.textContent = fmt(wepTotal);
   const checked = document.getElementById('wep-check').checked;
-  wepEl.classList.toggle('visible', checked);
-  wepSub.classList.toggle('visible', checked);
+  if (wepEl)  wepEl.classList.toggle('visible', checked);
+  if (wepSub) wepSub.classList.toggle('visible', checked);
 }
 
 function toggleWEP() {
   const chk = document.getElementById('wep-check');
   chk.checked = !chk.checked;
-  calcBVC();
+  updateGrandTotal();
 }
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
-  ['s-crews','s-rolls','s-rollcost','s-prevent','s-obs','s-upsell','s-rfps'].forEach(id => {
-    updateSliderTrack(document.getElementById(id));
-  });
-  calcBVC();
+  calcTab(1);
+  calcTab(2);
+  calcTab(3);
+  calcTab(4);
+  calcTab(5);
+  setTab(1);
 });
 </script>
 </body>

@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -329,6 +330,19 @@
       background:rgba(255,255,255,0.07); border-radius:5px; padding:2px 8px;
     }
     .bvc-bd-pill span { color:rgba(255,255,255,0.9); }
+    /* PDF export button */
+    .bvc-export-row { display:flex; justify-content:flex-end; margin-top:14px; }
+    .bvc-export-btn {
+      display:flex; align-items:center; gap:8px;
+      padding:10px 20px; border-radius:10px; border:none; cursor:pointer;
+      font-size:12px; font-weight:800; letter-spacing:0.04em;
+      background:white; color:var(--usg-dark);
+      border:1.5px solid #BFDBFE;
+      box-shadow:0 2px 12px rgba(36,145,235,0.12);
+      transition:all 0.2s;
+    }
+    .bvc-export-btn:hover { background:var(--usg-blue); color:white; border-color:var(--usg-blue); box-shadow:0 4px 18px rgba(36,145,235,0.3); }
+    .bvc-export-btn svg { flex-shrink:0; transition:stroke 0.2s; }
 
     /* ── MOBILE RESPONSIVE ── */
     @media (max-width: 768px) {
@@ -1428,6 +1442,14 @@
       <span class="bvc-bd-pill">M&amp;A: <span id="bd-5">$0</span></span>
     </div>
 
+    <!-- PDF Export -->
+    <div class="bvc-export-row reveal">
+      <button class="bvc-export-btn" onclick="generateBvcPDF()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a1 1 0 001 1h16a1 1 0 001-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export Business Case PDF
+      </button>
+    </div>
+
   </div>
 </section>
 
@@ -2022,6 +2044,215 @@ document.addEventListener('DOMContentLoaded', () => {
   calcTab(5);
   setTab(1);
 });
+
+/* ══════════════════════════════════════
+   BVC PDF EXPORT
+══════════════════════════════════════ */
+function generateBvcPDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('PDF library still loading — please try again in a moment.');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210, H = 297, M = 16, CW = W - 2 * M;
+
+  const DARK  = '#165EA0';
+  const BLUE  = '#2491EB';
+  const total = Object.values(tabTotals).reduce((a, b) => a + b, 0);
+  const fmtN  = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
+  const fmtKN = n => n>=1e6 ? '$'+(n/1e6).toFixed(1)+'M' : n>=1e3 ? '$'+Math.round(n/1e3)+'K' : fmtN(n);
+  const now   = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  // ── HEADER BAND ──────────────────────────────────
+  doc.setFillColor(DARK);
+  doc.rect(0, 0, W, 32, 'F');
+  doc.setTextColor('#FFFFFF');
+  doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  doc.text('Business Value Assessment', M, 14);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.setTextColor('#B0CFEA');
+  doc.text('USG Water Solutions  ×  Salesforce', M, 22);
+  doc.text(`Generated ${now}`, W - M, 22, { align:'right' });
+
+  // ── GRAND TOTAL BOX ──────────────────────────────
+  let y = 40;
+  doc.setFillColor('#EFF8FF');
+  doc.setDrawColor('#BFDBFE');
+  doc.roundedRect(M, y, CW, 28, 3, 3, 'FD');
+  doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+  doc.setTextColor('#64748B');
+  doc.text('COMBINED ANNUAL VALUE WITH SALESFORCE', M + 5, y + 8);
+  doc.setFont('helvetica','bold'); doc.setFontSize(26);
+  doc.setTextColor(DARK);
+  doc.text(fmtN(total), M + 5, y + 22);
+
+  const wepChecked = document.getElementById('wep-check').checked;
+  if (wepChecked) {
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.setTextColor('#64748B');
+    doc.text(`Warren Equity Portfolio ×11: ${fmtN(total * 11)}`, W - M, y + 22, { align:'right' });
+  }
+
+  // ── BAR CHART ─────────────────────────────────────
+  y += 36;
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.setTextColor(DARK);
+  doc.text('Value by Category', M, y);
+  y += 4;
+
+  const cvs = document.createElement('canvas');
+  cvs.width = 720; cvs.height = 260;
+  const tabLabels = ['Field Operations','Asset Intelligence','Revenue Growth','Platform ROI','M&A & Scale'];
+  const tabColors = ['#2491EB','#059669','#F26641','#7C3AED','#0EA5E9'];
+  const tabVals   = [1,2,3,4,5].map(n => tabTotals[n]);
+
+  const tmpChart = new Chart(cvs, {
+    type: 'bar',
+    data: {
+      labels: tabLabels,
+      datasets: [{ data: tabVals, backgroundColor: tabColors, borderRadius: 8, borderSkipped: false }]
+    },
+    options: {
+      responsive: false, animation: false,
+      plugins: { legend:{ display:false }, tooltip:{ enabled:false } },
+      scales: {
+        x: { grid:{display:false}, border:{display:false}, ticks:{ font:{weight:'700',size:12}, color:'#374151' } },
+        y: { grid:{color:'#F3F4F6'}, border:{display:false}, ticks:{ callback: v => fmtKN(v), font:{size:10}, color:'#9CA3AF' }, beginAtZero:true }
+      }
+    }
+  });
+
+  const chartImg = cvs.toDataURL('image/png');
+  tmpChart.destroy();
+
+  const chartH = CW * (260 / 720);
+  doc.addImage(chartImg, 'PNG', M, y, CW, chartH);
+  y += chartH + 10;
+
+  // ── PER-TAB BREAKDOWN ─────────────────────────────
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.setTextColor(DARK);
+  doc.text('Detailed Breakdown', M, y);
+  y += 5;
+
+  const g = id => document.getElementById(id)?.textContent?.trim() || '—';
+
+  const tabs = [
+    {
+      n:1, name:'Field Operations', color:'#2491EB',
+      inputs:[
+        ['Field Crews', g('v-crews')],
+        ['Avg Cost per Truck Roll', g('v-rollcost')],
+        ['Truck Rolls / Crew / Month', g('v-rolls')],
+        ['Preventable Truck Rolls', g('v-prevent')],
+        ['Observations / Crew / Month', g('v-obs')],
+        ['RFPs per Year', g('v-rfps')],
+        ['Avg Contract Value', g('v-upsell')],
+      ],
+      outputs:[
+        ['Truck Roll Savings / Year', g('o-rolls')],
+        ['Field Pipeline Recovered / Year', g('o-pipeline')],
+        ['RFP Revenue Recovered / Year', g('o-rfp')],
+        ['Work Order Hours Saved / Year', g('o-time')],
+      ]
+    },
+    {
+      n:2, name:'Asset Intelligence', color:'#059669',
+      inputs:[
+        ['Total Assets Managed', g('v-assets')],
+        ['Avg Cost per Asset Renovation', g('v-renocost')],
+        ['Renovation Cycle Extension', g('v-renoext')],
+      ],
+      outputs:[ ['CapEx Deferral Savings / Year', g('o-capex')] ]
+    },
+    {
+      n:3, name:'Revenue Growth', color:'#F26641',
+      inputs:[
+        ['Annual Cross-Sell Pipeline', g('v-cspipeline')],
+        ['Win Rate Lift', g('v-wrlift')],
+      ],
+      outputs:[ ['Cross-Sell Revenue Lift / Year', g('o-cslift')] ]
+    },
+    {
+      n:4, name:'Platform ROI', color:'#7C3AED',
+      inputs:[
+        ['Legacy System Maintenance', g('v-maint')],
+        ['Employees Reconciling Data', g('v-recon-emp')],
+        ['Hours / Week per Employee', g('v-recon-hrs')],
+        ['Annual Inventory / Parts Spend', g('v-invspend')],
+        ['Inventory Leakage %', g('v-invleak')],
+      ],
+      outputs:[
+        ['IT Consolidation Savings / Year', g('o-itconsolid')],
+        ['Productivity + Inventory Reclaimed / Year', g('o-prodreclaim')],
+      ]
+    },
+    {
+      n:5, name:'M&A & Scale', color:'#0EA5E9',
+      inputs:[
+        ['Projected Acquisitions / Year', g('v-acqs')],
+        ['IT Hours to Onboard One Acquisition', g('v-acq-hrs')],
+        ['Avg IT Hourly Rate', g('v-acq-rate')],
+      ],
+      outputs:[ ['Acquisition Onboarding Savings / Year', g('o-macq')] ]
+    }
+  ];
+
+  for (const tab of tabs) {
+    const rowCount = tab.inputs.length + tab.outputs.length;
+    const blockH   = 9 + rowCount * 5.5 + 10;
+    if (y + blockH > H - 20) { doc.addPage(); y = 16; }
+
+    // Tab header
+    doc.setFillColor(tab.color);
+    doc.roundedRect(M, y, CW, 7.5, 2, 2, 'F');
+    doc.setTextColor('#FFFFFF');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8);
+    doc.text(tab.name.toUpperCase(), M + 4, y + 5.2);
+    doc.text(fmtN(tabTotals[tab.n]), W - M, y + 5.2, { align:'right' });
+    y += 10;
+
+    // Input rows
+    doc.setFontSize(7); doc.setFont('helvetica','bold');
+    doc.setTextColor('#94A3B8');
+    doc.text('YOUR INPUTS', M + 2, y); y += 4;
+    for (const [label, val] of tab.inputs) {
+      doc.setFont('helvetica','normal'); doc.setTextColor('#374151');
+      doc.text(label, M + 4, y);
+      doc.setFont('helvetica','bold'); doc.setTextColor('#1E3A5F');
+      doc.text(val, W - M, y, { align:'right' });
+      y += 5;
+    }
+
+    // Output rows
+    y += 1;
+    doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    doc.setTextColor('#94A3B8');
+    doc.text('CALCULATED VALUE', M + 2, y); y += 4;
+    for (const [label, val] of tab.outputs) {
+      doc.setFillColor('#EFF8FF');
+      doc.roundedRect(M + 2, y - 3, CW - 4, 6, 1, 1, 'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor('#374151');
+      doc.text(label, M + 5, y + 1);
+      doc.setFont('helvetica','bold'); doc.setTextColor(tab.color);
+      doc.text(val, W - M - 3, y + 1, { align:'right' });
+      y += 8;
+    }
+    y += 4;
+  }
+
+  // ── FOOTER ─────────────────────────────────────────
+  if (y > H - 20) { doc.addPage(); }
+  doc.setFillColor(DARK);
+  doc.rect(0, H - 14, W, 14, 'F');
+  doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+  doc.setTextColor('#B0CFEA');
+  doc.text('Prepared by Salesforce · Confidential · For Discussion Purposes Only', M, H - 5.5);
+  doc.text('salesforce.com', W - M, H - 5.5, { align:'right' });
+
+  doc.save('USG-Water-Salesforce-Business-Value.pdf');
+}
 </script>
 </body>
 </html>

@@ -413,6 +413,57 @@
       .flip-front, .flip-back { padding: 20px !important; }
       .stat-card { min-width: 100px !important; }
     }
+
+    /* ── Listen / Audio playback bar ── */
+    #listen-bar {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      margin-bottom: 36px;
+    }
+    #listen-btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.28);
+      backdrop-filter: blur(10px); color: white; font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+      padding: 9px 20px; border-radius: 99px; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      outline: none;
+    }
+    #listen-btn:hover { background: rgba(255,255,255,0.17); border-color: rgba(255,255,255,0.45); transform: translateY(-1px); }
+    #listen-btn:active { transform: translateY(0); }
+    #listen-btn.is-playing { background: rgba(36,145,235,0.22); border-color: rgba(36,145,235,0.55); }
+    #listen-icon {
+      display: inline-flex; align-items: center; gap: 2px; width: 18px; justify-content: center;
+    }
+    /* Static triangle */
+    #listen-icon.play-icon::before { content: '▶'; font-size: 11px; }
+    /* Animated wave bars when playing */
+    #listen-icon.wave-icon { height: 16px; }
+    #listen-icon.wave-icon .wave-bar {
+      width: 3px; border-radius: 2px; background: var(--usg-blue);
+      animation: audioWave 0.9s ease-in-out infinite;
+    }
+    #listen-icon.wave-icon .wave-bar:nth-child(1) { animation-delay: 0s;    height: 8px; }
+    #listen-icon.wave-icon .wave-bar:nth-child(2) { animation-delay: 0.18s; height: 14px; }
+    #listen-icon.wave-icon .wave-bar:nth-child(3) { animation-delay: 0.36s; height: 10px; }
+    #listen-icon.wave-icon .wave-bar:nth-child(4) { animation-delay: 0.12s; height: 6px; }
+    @keyframes audioWave {
+      0%, 100% { transform: scaleY(0.45); opacity: 0.7; }
+      50%       { transform: scaleY(1.0);  opacity: 1.0; }
+    }
+    #listen-duration { opacity: 0.62; font-weight: 400; }
+    #listen-label-text { font-weight: 600; }
+    /* Thin progress track below the button */
+    #listen-progress-track {
+      width: 220px; height: 3px; border-radius: 99px;
+      background: rgba(255,255,255,0.15); overflow: hidden;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    #listen-progress-track.visible { opacity: 1; }
+    #listen-progress-fill {
+      height: 100%; width: 0%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--usg-blue), var(--usg-green));
+      transition: width 0.4s linear;
+    }
   </style>
 </head>
 <body>
@@ -480,9 +531,21 @@
     <h1 class="anim-fiu d-2" style="font-size:clamp(2.8rem,7vw,5.2rem);font-weight:900;color:white;line-height:1.05;letter-spacing:-0.03em;margin-bottom:16px;">
       Unified AI &amp; PE<br/>Revenue Engine
     </h1>
-    <p class="anim-fiu d-3" style="font-size:1.15rem;color:rgba(255,255,255,0.78);max-width:620px;line-height:1.7;margin-bottom:44px;">
+    <p class="anim-fiu d-3" style="font-size:1.15rem;color:rgba(255,255,255,0.78);max-width:620px;line-height:1.7;margin-bottom:32px;">
       How Salesforce converts 130+ field crews, stranded Claude AI insights, broken marketing attribution, and board-level blind spots into a single governed revenue machine across 48 states.
     </p>
+
+    <!-- Listen button -->
+    <div id="listen-bar" class="anim-fi d-3">
+      <button id="listen-btn" onclick="toggleListen()" aria-label="Listen to an audio overview">
+        <span id="listen-icon" class="play-icon"></span>
+        <span id="listen-label-text">Listen</span>
+        <span id="listen-duration">(2 min)</span>
+      </button>
+      <div id="listen-progress-track">
+        <div id="listen-progress-fill"></div>
+      </div>
+    </div>
 
     <!-- Salesforce product pills -->
     <div class="anim-fiu d-4 flex flex-wrap justify-center gap-2 mb-12">
@@ -2421,6 +2484,158 @@ function generateBvcPDF() {
 
   doc.save('USG-Water-Salesforce-Business-Value.pdf');
 }
+
+/* ══════════════════════════════════════════════════════════
+   LISTEN / AUDIO PLAYBACK
+   Uses the browser's built-in Web Speech API — no CDN, no cost.
+   ══════════════════════════════════════════════════════════ */
+
+const LISTEN_SCRIPT = `
+USG Water Solutions operates across 48 states with over 130 field crews maintaining critical water infrastructure for communities throughout the United States. Recently acquired by Warren Equity Partners — a private equity firm with a portfolio of 11 companies, all standardized on Salesforce — USG Water is at a pivotal moment.
+
+The challenge is real and urgent. Today, USG Water runs on three disconnected platforms: Oracle Sales Cloud, HubSpot, and a 25-year-old Oracle ERP. Every time a field technician discovers a cross-sell opportunity on a job site, that insight disappears. It never becomes a tracked opportunity. It never becomes revenue. Meanwhile, the marketing team runs over 150 events annually with zero closed-loop attribution — no way to tie a campaign touchpoint to a closed deal. And the board at Warren Equity is flying blind, making portfolio decisions without live revenue intelligence.
+
+This is precisely what Salesforce was built to solve.
+
+When USG Water unifies on Salesforce, 130 field crews become active revenue channels. Every site visit, every asset observation, every cross-sell signal flows automatically into a tracked opportunity. HubSpot stays — it connects natively to Salesforce, and every event touchpoint maps back to closed revenue. Agentforce, powered by Claude AI, analyzes asset imagery and condition data to predict renovations before they become costly emergencies. And Warren Equity gets a live board dashboard showing real-time pipeline, renewal risk, and win-rate velocity across all 11 portfolio companies.
+
+This microsite walks you through exactly how that works. You'll see the four revenue leaks USG Water faces today, the six-product Salesforce platform designed to close them, the AI architecture that turns asset data into margin, and a clear 90-day path to get there.
+
+Take your time exploring. When you reach the Business Value Calculator, plug in USG Water's own numbers — field crews, truck rolls, cross-sell pipeline — and watch the financial case build in real time.
+
+When you're ready to move forward, your Salesforce team is one click away.
+`.trim();
+
+let listenUtterance = null;
+let listenState = 'idle'; // idle | playing | paused
+let listenVoice = null;
+let listenCharTotal = 0;
+
+function initListen() {
+  if (!('speechSynthesis' in window)) {
+    document.getElementById('listen-bar').style.display = 'none';
+    return;
+  }
+
+  listenCharTotal = LISTEN_SCRIPT.length;
+
+  // Calculate and display estimated duration (140 wpm)
+  const wordCount = LISTEN_SCRIPT.split(/\s+/).length;
+  const minutes = Math.round(wordCount / 140);
+  document.getElementById('listen-duration').textContent = `(${minutes} min)`;
+
+  // Pick the best available en-US voice
+  function pickVoice() {
+    const voices = speechSynthesis.getVoices();
+    const preferred = [
+      'Google US English',
+      'Microsoft David - English (United States)',
+      'Microsoft Zira - English (United States)',
+      'Samantha',
+      'Alex',
+    ];
+    for (const name of preferred) {
+      const v = voices.find(v => v.name === name);
+      if (v) { listenVoice = v; return; }
+    }
+    // Fall back to first en-US voice
+    listenVoice = voices.find(v => v.lang === 'en-US') || voices[0] || null;
+  }
+
+  // Chrome loads voices async
+  if (speechSynthesis.getVoices().length > 0) {
+    pickVoice();
+  } else {
+    speechSynthesis.addEventListener('voiceschanged', pickVoice, { once: true });
+  }
+}
+
+function toggleListen() {
+  if (!('speechSynthesis' in window)) return;
+
+  const btn = document.getElementById('listen-btn');
+  const icon = document.getElementById('listen-icon');
+  const label = document.getElementById('listen-label-text');
+  const track = document.getElementById('listen-progress-track');
+
+  if (listenState === 'idle') {
+    // Build utterance
+    listenUtterance = new SpeechSynthesisUtterance(LISTEN_SCRIPT);
+    listenUtterance.rate = 0.95;
+    listenUtterance.pitch = 1.0;
+    listenUtterance.volume = 1.0;
+    if (listenVoice) listenUtterance.voice = listenVoice;
+
+    // Progress tracking via boundary events
+    listenUtterance.addEventListener('boundary', e => {
+      if (e.name === 'word' && listenCharTotal > 0) {
+        const pct = Math.min(100, (e.charIndex / listenCharTotal) * 100);
+        document.getElementById('listen-progress-fill').style.width = pct + '%';
+      }
+    });
+
+    listenUtterance.addEventListener('end', () => {
+      listenState = 'idle';
+      btn.classList.remove('is-playing');
+      icon.className = 'play-icon';
+      icon.innerHTML = '';
+      label.textContent = 'Listen';
+      document.getElementById('listen-progress-fill').style.width = '100%';
+      setTimeout(() => {
+        document.getElementById('listen-progress-fill').style.width = '0%';
+        track.classList.remove('visible');
+      }, 1200);
+    });
+
+    speechSynthesis.cancel(); // clear any leftover
+    speechSynthesis.speak(listenUtterance);
+    listenState = 'playing';
+    btn.classList.add('is-playing');
+    icon.className = 'wave-icon';
+    icon.innerHTML = '<span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>';
+    label.textContent = 'Pause';
+    track.classList.add('visible');
+
+  } else if (listenState === 'playing') {
+    speechSynthesis.pause();
+    listenState = 'paused';
+    btn.classList.remove('is-playing');
+    icon.className = 'play-icon';
+    icon.innerHTML = '';
+    label.textContent = 'Resume';
+
+  } else if (listenState === 'paused') {
+    speechSynthesis.resume();
+    listenState = 'playing';
+    btn.classList.add('is-playing');
+    icon.className = 'wave-icon';
+    icon.innerHTML = '<span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>';
+    label.textContent = 'Pause';
+  }
+}
+
+// Stop playback if user navigates away from slide-1
+window.addEventListener('scroll', () => {
+  if (listenState !== 'idle') {
+    const slide1 = document.getElementById('slide-1');
+    const r = slide1.getBoundingClientRect();
+    // If slide-1 is entirely above the viewport, stop
+    if (r.bottom < -100) {
+      speechSynthesis.cancel();
+      listenState = 'idle';
+      const btn = document.getElementById('listen-btn');
+      const icon = document.getElementById('listen-icon');
+      btn.classList.remove('is-playing');
+      icon.className = 'play-icon';
+      icon.innerHTML = '';
+      document.getElementById('listen-label-text').textContent = 'Listen';
+      document.getElementById('listen-progress-track').classList.remove('visible');
+      document.getElementById('listen-progress-fill').style.width = '0%';
+    }
+  }
+}, { passive: true });
+
+window.addEventListener('load', initListen);
 </script>
 </body>
 </html>

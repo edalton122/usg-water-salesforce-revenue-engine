@@ -2055,88 +2055,182 @@ function generateBvcPDF() {
   }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const W = 210, H = 297, M = 16, CW = W - 2 * M;
+  const W = 210, H = 297, M = 14, CW = W - 2 * M;
 
-  const DARK  = '#165EA0';
-  const BLUE  = '#2491EB';
-  const total = Object.values(tabTotals).reduce((a, b) => a + b, 0);
-  const fmtN  = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
-  const fmtKN = n => n>=1e6 ? '$'+(n/1e6).toFixed(1)+'M' : n>=1e3 ? '$'+Math.round(n/1e3)+'K' : fmtN(n);
-  const now   = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const C = {
+    dark:'#165EA0', blue:'#2491EB', green:'#059669',
+    orange:'#F26641', purple:'#7C3AED', sky:'#0EA5E9',
+    light:'#EFF8FF', gray:'#64748B', text:'#1E293B', muted:'#94A3B8'
+  };
+  const TAB_COLORS = ['#2491EB','#059669','#F26641','#7C3AED','#0EA5E9'];
+  const TAB_NAMES  = ['Field Operations','Asset Intelligence','Revenue Growth','Platform ROI','M&A & Scale'];
 
-  // ── HEADER BAND ──────────────────────────────────
-  doc.setFillColor(DARK);
-  doc.rect(0, 0, W, 32, 'F');
-  doc.setTextColor('#FFFFFF');
-  doc.setFont('helvetica','bold'); doc.setFontSize(16);
-  doc.text('Business Value Assessment', M, 14);
-  doc.setFont('helvetica','normal'); doc.setFontSize(9);
-  doc.setTextColor('#B0CFEA');
-  doc.text('USG Water Solutions  ×  Salesforce', M, 22);
-  doc.text(`Generated ${now}`, W - M, 22, { align:'right' });
+  const total  = Object.values(tabTotals).reduce((a,b) => a+b, 0);
+  const tabVals = [1,2,3,4,5].map(n => tabTotals[n]);
+  const fmtN   = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
+  const fmtKN  = n => n>=1e6 ? '$'+(n/1e6).toFixed(1)+'M' : n>=1e3 ? '$'+Math.round(n/1e3)+'K' : fmtN(n);
+  const now    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const g      = id => document.getElementById(id)?.textContent?.trim() || '—';
+  const wep    = document.getElementById('wep-check').checked;
 
-  // ── GRAND TOTAL BOX ──────────────────────────────
-  let y = 40;
-  doc.setFillColor('#EFF8FF');
-  doc.setDrawColor('#BFDBFE');
-  doc.roundedRect(M, y, CW, 28, 3, 3, 'FD');
-  doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
-  doc.setTextColor('#64748B');
-  doc.text('COMBINED ANNUAL VALUE WITH SALESFORCE', M + 5, y + 8);
-  doc.setFont('helvetica','bold'); doc.setFontSize(26);
-  doc.setTextColor(DARK);
-  doc.text(fmtN(total), M + 5, y + 22);
+  // Parse a formatted money string back to a number for bar sizing
+  const parseMoney = s => {
+    if (!s || s==='—') return 0;
+    if (s.includes('M')) return parseFloat(s.replace(/[^0-9.]/g,''))*1e6;
+    if (s.includes('K')) return parseFloat(s.replace(/[^0-9.]/g,''))*1e3;
+    const n = parseFloat(s.replace(/[^0-9.]/g,''));
+    return isNaN(n) ? 0 : n;
+  };
 
-  const wepChecked = document.getElementById('wep-check').checked;
-  if (wepChecked) {
-    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
-    doc.setTextColor('#64748B');
-    doc.text(`Warren Equity Portfolio ×11: ${fmtN(total * 11)}`, W - M, y + 22, { align:'right' });
+  // Helper: draw footer on every page
+  function addFooter(pageNum, totalPages) {
+    doc.setPage(pageNum);
+    doc.setFillColor(C.dark);
+    doc.rect(0, H-11, W, 11, 'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    doc.setTextColor('#B0CFEA');
+    doc.text('Prepared by Salesforce · Confidential · For Discussion Purposes Only', M, H-4);
+    doc.text(`Page ${pageNum} of ${totalPages}  ·  salesforce.com`, W-M, H-4, {align:'right'});
   }
 
-  // ── BAR CHART ─────────────────────────────────────
-  y += 36;
+  // Helper: draw a labeled horizontal bar
+  function drawBar(x, y, w, h, pct, color, bgColor) {
+    doc.setFillColor(bgColor || '#E2E8F0');
+    doc.roundedRect(x, y, w, h, h/2, h/2, 'F');
+    if (pct > 0.005) {
+      doc.setFillColor(color);
+      doc.roundedRect(x, y, Math.max(w*pct, h), h, h/2, h/2, 'F');
+    }
+  }
+
+  let y = 0;
+
+  /* ══════════════════════════════════════
+     PAGE 1 — EXECUTIVE SUMMARY
+  ══════════════════════════════════════ */
+
+  // HEADER BAND
+  doc.setFillColor(C.dark);
+  doc.rect(0, 0, W, 36, 'F');
+  doc.setFillColor(C.blue);
+  doc.rect(0, 36, W, 2.5, 'F');
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.setTextColor('#FFFFFF');
+  doc.text('Business Value Assessment', M, 16);
   doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  doc.setTextColor(DARK);
-  doc.text('Value by Category', M, y);
+  doc.setTextColor('#B0CFEA');
+  doc.text('USG Water Solutions  ×  Salesforce', M, 25);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.text(`Generated ${now}`, W-M, 25, {align:'right'});
+  doc.setFontSize(7);
+  doc.text('CONFIDENTIAL  ·  FOR DISCUSSION PURPOSES ONLY', M, 32.5);
+
+  y = 46;
+
+  // GRAND TOTAL HERO
+  doc.setFillColor(C.light);
+  doc.setDrawColor('#BFDBFE');
+  doc.roundedRect(M, y, CW, 32, 4, 4, 'FD');
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+  doc.setTextColor(C.gray);
+  doc.text('COMBINED ANNUAL VALUE WITH SALESFORCE', M+6, y+9);
+  doc.setFont('helvetica','bold'); doc.setFontSize(30);
+  doc.setTextColor(C.dark);
+  doc.text(fmtN(total), M+6, y+25);
+
+  if (wep) {
+    doc.setFillColor(C.orange);
+    doc.roundedRect(W-M-58, y+6, 58, 20, 3, 3, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+    doc.setTextColor('#FFFFFF');
+    doc.text('WARREN EQUITY PORTFOLIO ×11', W-M-29, y+13, {align:'center'});
+    doc.setFontSize(11);
+    doc.text(fmtKN(total*11), W-M-29, y+22, {align:'center'});
+  }
+
+  y += 40;
+
+  // DONUT CHART — value distribution (shows all 5 slices regardless of scale)
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.setTextColor(C.dark);
+  doc.text('Value Distribution by Category', M, y);
   y += 4;
 
-  const cvs = document.createElement('canvas');
-  cvs.width = 720; cvs.height = 260;
-  const tabLabels = ['Field Operations','Asset Intelligence','Revenue Growth','Platform ROI','M&A & Scale'];
-  const tabColors = ['#2491EB','#059669','#F26641','#7C3AED','#0EA5E9'];
-  const tabVals   = [1,2,3,4,5].map(n => tabTotals[n]);
-
-  const tmpChart = new Chart(cvs, {
-    type: 'bar',
+  const donutCvs = document.createElement('canvas');
+  donutCvs.width = 560; donutCvs.height = 220;
+  const donutChart = new Chart(donutCvs, {
+    type: 'doughnut',
     data: {
-      labels: tabLabels,
-      datasets: [{ data: tabVals, backgroundColor: tabColors, borderRadius: 8, borderSkipped: false }]
+      labels: TAB_NAMES,
+      datasets: [{ data: tabVals, backgroundColor: TAB_COLORS, borderWidth: 3, borderColor: '#FFFFFF', hoverOffset: 0 }]
     },
     options: {
       responsive: false, animation: false,
-      plugins: { legend:{ display:false }, tooltip:{ enabled:false } },
-      scales: {
-        x: { grid:{display:false}, border:{display:false}, ticks:{ font:{weight:'700',size:12}, color:'#374151' } },
-        y: { grid:{color:'#F3F4F6'}, border:{display:false}, ticks:{ callback: v => fmtKN(v), font:{size:10}, color:'#9CA3AF' }, beginAtZero:true }
+      cutout: '58%',
+      plugins: {
+        legend: {
+          display: true, position: 'right',
+          labels: {
+            font:{size:11, weight:'600'}, color:'#374151', padding:12,
+            generateLabels: chart => chart.data.labels.map((label,i) => ({
+              text: `${label}  ${fmtKN(tabVals[i])}`,
+              fillStyle: TAB_COLORS[i], strokeStyle:'#fff', lineWidth:1, hidden:false, index:i
+            }))
+          }
+        },
+        tooltip: { enabled: false }
       }
     }
   });
+  const donutImg = donutCvs.toDataURL('image/png');
+  donutChart.destroy();
+  const donutH = CW * (220/560);
+  doc.addImage(donutImg, 'PNG', M, y, CW, donutH);
+  y += donutH + 6;
 
-  const chartImg = cvs.toDataURL('image/png');
-  tmpChart.destroy();
-
-  const chartH = CW * (260 / 720);
-  doc.addImage(chartImg, 'PNG', M, y, CW, chartH);
-  y += chartH + 10;
-
-  // ── PER-TAB BREAKDOWN ─────────────────────────────
+  // CATEGORY SUMMARY ROWS with proportional bars
   doc.setFont('helvetica','bold'); doc.setFontSize(9);
-  doc.setTextColor(DARK);
-  doc.text('Detailed Breakdown', M, y);
-  y += 5;
+  doc.setTextColor(C.dark);
+  doc.text('Category Breakdown', M, y); y += 5;
 
-  const g = id => document.getElementById(id)?.textContent?.trim() || '—';
+  const maxVal = Math.max(...tabVals, 1);
+  const barStartX = M + 56;
+  const barW = CW - 56 - 26;
+
+  for (let i = 0; i < 5; i++) {
+    const pct = total > 0 ? (tabVals[i]/total*100).toFixed(1) : '0.0';
+    // Swatch
+    doc.setFillColor(TAB_COLORS[i]);
+    doc.roundedRect(M, y+0.5, 3.5, 7, 1, 1, 'F');
+    // Label
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(C.text);
+    doc.text(TAB_NAMES[i], M+6, y+6);
+    // Bar
+    drawBar(barStartX, y+1.5, barW, 5, tabVals[i]/maxVal, TAB_COLORS[i]);
+    // Value
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(TAB_COLORS[i]);
+    doc.text(fmtKN(tabVals[i]), W-M, y+6, {align:'right'});
+    // Pct
+    doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(C.muted);
+    doc.text(pct+'%', W-M-22, y+6, {align:'right'});
+    y += 10;
+  }
+
+  /* ══════════════════════════════════════
+     PAGE 2+ — PER-TAB DETAIL
+  ══════════════════════════════════════ */
+  doc.addPage();
+  y = 8;
+
+  // Slim page 2+ header
+  doc.setFillColor(C.dark);
+  doc.rect(0, 0, W, 13, 'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(8);
+  doc.setTextColor('#FFFFFF');
+  doc.text('USG Water Solutions × Salesforce  ·  Detailed Category Breakdown', M, 9);
+  y = 20;
 
   const tabs = [
     {
@@ -2151,10 +2245,10 @@ function generateBvcPDF() {
         ['Avg Contract Value', g('v-upsell')],
       ],
       outputs:[
-        ['Truck Roll Savings / Year', g('o-rolls')],
-        ['Field Pipeline Recovered / Year', g('o-pipeline')],
-        ['RFP Revenue Recovered / Year', g('o-rfp')],
-        ['Work Order Hours Saved / Year', g('o-time')],
+        {label:'Truck Roll Savings / Year',     val:g('o-rolls'),    raw:parseMoney(g('o-rolls'))},
+        {label:'Field Pipeline Recovered / Year',val:g('o-pipeline'), raw:parseMoney(g('o-pipeline'))},
+        {label:'RFP Revenue Recovered / Year',   val:g('o-rfp'),     raw:parseMoney(g('o-rfp'))},
+        {label:'Work Order Time Reclaimed / Year',val:g('o-timeval'), raw:parseMoney(g('o-timeval'))},
       ]
     },
     {
@@ -2164,7 +2258,7 @@ function generateBvcPDF() {
         ['Avg Cost per Asset Renovation', g('v-renocost')],
         ['Renovation Cycle Extension', g('v-renoext')],
       ],
-      outputs:[ ['CapEx Deferral Savings / Year', g('o-capex')] ]
+      outputs:[{label:'CapEx Deferral Savings / Year', val:g('o-capex'), raw:tabTotals[2]}]
     },
     {
       n:3, name:'Revenue Growth', color:'#F26641',
@@ -2172,7 +2266,7 @@ function generateBvcPDF() {
         ['Annual Cross-Sell Pipeline', g('v-cspipeline')],
         ['Win Rate Lift', g('v-wrlift')],
       ],
-      outputs:[ ['Cross-Sell Revenue Lift / Year', g('o-cslift')] ]
+      outputs:[{label:'Cross-Sell Revenue Lift / Year', val:g('o-cslift'), raw:tabTotals[3]}]
     },
     {
       n:4, name:'Platform ROI', color:'#7C3AED',
@@ -2184,8 +2278,8 @@ function generateBvcPDF() {
         ['Inventory Leakage %', g('v-invleak')],
       ],
       outputs:[
-        ['IT Consolidation Savings / Year', g('o-itconsolid')],
-        ['Productivity + Inventory Reclaimed / Year', g('o-prodreclaim')],
+        {label:'IT Consolidation Savings / Year',              val:g('o-itconsolid'),  raw:parseMoney(g('o-itconsolid'))},
+        {label:'Productivity + Inventory Reclaimed / Year',    val:g('o-prodreclaim'), raw:parseMoney(g('o-prodreclaim'))},
       ]
     },
     {
@@ -2195,61 +2289,135 @@ function generateBvcPDF() {
         ['IT Hours to Onboard One Acquisition', g('v-acq-hrs')],
         ['Avg IT Hourly Rate', g('v-acq-rate')],
       ],
-      outputs:[ ['Acquisition Onboarding Savings / Year', g('o-macq')] ]
+      outputs:[{label:'Acquisition Onboarding Savings / Year', val:g('o-macq'), raw:tabTotals[5]}]
     }
   ];
 
   for (const tab of tabs) {
-    const rowCount = tab.inputs.length + tab.outputs.length;
-    const blockH   = 9 + rowCount * 5.5 + 10;
-    if (y + blockH > H - 20) { doc.addPage(); y = 16; }
+    // Estimate block height: header + inputs/2 rows + output cards
+    const inputRows = Math.ceil(tab.inputs.length / 2);
+    const blockH = 14 + inputRows*6 + tab.outputs.length*26 + 10;
+    if (y + blockH > H - 18) { doc.addPage(); y = 20; }
 
-    // Tab header
+    // ── TAB HEADER BAND ──
     doc.setFillColor(tab.color);
-    doc.roundedRect(M, y, CW, 7.5, 2, 2, 'F');
+    doc.roundedRect(M, y, CW, 11, 2.5, 2.5, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9.5);
     doc.setTextColor('#FFFFFF');
-    doc.setFont('helvetica','bold'); doc.setFontSize(8);
-    doc.text(tab.name.toUpperCase(), M + 4, y + 5.2);
-    doc.text(fmtN(tabTotals[tab.n]), W - M, y + 5.2, { align:'right' });
-    y += 10;
+    doc.text(tab.name.toUpperCase(), M+5, y+7.5);
+    doc.text(fmtN(tabTotals[tab.n]), W-M, y+7.5, {align:'right'});
+    y += 14;
 
-    // Input rows
-    doc.setFontSize(7); doc.setFont('helvetica','bold');
-    doc.setTextColor('#94A3B8');
-    doc.text('YOUR INPUTS', M + 2, y); y += 4;
-    for (const [label, val] of tab.inputs) {
-      doc.setFont('helvetica','normal'); doc.setTextColor('#374151');
-      doc.text(label, M + 4, y);
-      doc.setFont('helvetica','bold'); doc.setTextColor('#1E3A5F');
-      doc.text(val, W - M, y, { align:'right' });
-      y += 5;
-    }
+    // ── INPUTS (2-column grid) ──
+    doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+    doc.setTextColor(C.muted);
+    doc.text('YOUR INPUTS', M+2, y); y += 4;
 
-    // Output rows
-    y += 1;
-    doc.setFont('helvetica','bold'); doc.setFontSize(7);
-    doc.setTextColor('#94A3B8');
-    doc.text('CALCULATED VALUE', M + 2, y); y += 4;
-    for (const [label, val] of tab.outputs) {
-      doc.setFillColor('#EFF8FF');
-      doc.roundedRect(M + 2, y - 3, CW - 4, 6, 1, 1, 'F');
-      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor('#374151');
-      doc.text(label, M + 5, y + 1);
-      doc.setFont('helvetica','bold'); doc.setTextColor(tab.color);
-      doc.text(val, W - M - 3, y + 1, { align:'right' });
-      y += 8;
+    const colW = (CW-5)/2;
+    const half = Math.ceil(tab.inputs.length/2);
+    for (let i = 0; i < half; i++) {
+      const L = tab.inputs[i];
+      const R = tab.inputs[i+half];
+      const rowBg = i%2===0 ? '#F8FAFC' : '#FFFFFF';
+
+      doc.setFillColor(rowBg);
+      doc.rect(M, y-1, colW, 6, 'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor('#475569');
+      doc.text(L[0], M+3, y+3.5);
+      doc.setFont('helvetica','bold'); doc.setTextColor(C.dark);
+      doc.text(L[1], M+colW-2, y+3.5, {align:'right'});
+
+      if (R) {
+        doc.setFillColor(rowBg);
+        doc.rect(M+colW+5, y-1, colW, 6, 'F');
+        doc.setFont('helvetica','normal'); doc.setTextColor('#475569');
+        doc.text(R[0], M+colW+8, y+3.5);
+        doc.setFont('helvetica','bold'); doc.setTextColor(C.dark);
+        doc.text(R[1], M+CW, y+3.5, {align:'right'});
+      }
+      y += 6;
     }
     y += 4;
+
+    // ── OUTPUT CARDS with mini bar charts ──
+    doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+    doc.setTextColor(C.muted);
+    doc.text('CALCULATED VALUE', M+2, y); y += 4;
+
+    const maxOut = Math.max(...tab.outputs.map(o => o.raw), 1);
+
+    for (const out of tab.outputs) {
+      if (y + 24 > H - 18) { doc.addPage(); y = 20; }
+
+      // Card background
+      doc.setFillColor('#FAFBFF');
+      doc.setDrawColor(tab.color);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(M, y, CW, 22, 2.5, 2.5, 'FD');
+      doc.setLineWidth(0.2);
+
+      // Left column: label + value
+      const labelX = M+5;
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor('#475569');
+      doc.text(out.label, labelX, y+7);
+      doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(tab.color);
+      doc.text(out.val, labelX, y+17);
+
+      // Right column: mini bar chart (own chart per output — via Chart.js canvas)
+      const chartX = M + CW*0.52;
+      const chartDispW = CW*0.44;
+      const chartDispH = 18;
+
+      // Build a tiny horizontal bar chart
+      const miniCvs = document.createElement('canvas');
+      miniCvs.width = 400; miniCvs.height = 130;
+
+      // We show this output vs tab total context
+      const miniChart = new Chart(miniCvs, {
+        type: 'bar',
+        data: {
+          labels: [out.label.split(' / ')[0]], // short label
+          datasets: [{
+            data: [out.raw],
+            backgroundColor: [tab.color],
+            borderRadius: 8,
+            borderSkipped: false,
+            barThickness: 40,
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: false, animation: false,
+          plugins: { legend:{display:false}, tooltip:{enabled:false} },
+          scales: {
+            x: {
+              grid:{color:'rgba(0,0,0,0.04)'}, border:{display:false},
+              ticks:{ callback: v=>fmtKN(v), font:{size:11,weight:'600'}, color:'#6B7280' },
+              beginAtZero: true, max: maxOut * 1.15
+            },
+            y: { display: false }
+          }
+        }
+      });
+      const miniImg = miniCvs.toDataURL('image/png');
+      miniChart.destroy();
+      doc.addImage(miniImg, 'PNG', chartX, y+2, chartDispW, chartDispH);
+
+      // % of tab total pill
+      const pctOfTab = tabTotals[tab.n] > 0 ? (out.raw/tabTotals[tab.n]*100).toFixed(0)+'%' : '—';
+      doc.setFillColor(tab.color+'22');
+      doc.roundedRect(chartX, y+1, 18, 5.5, 1.5, 1.5, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(6.5); doc.setTextColor(tab.color);
+      doc.text(pctOfTab+' of tab', chartX+9, y+5, {align:'center'});
+
+      y += 25;
+    }
+    y += 5;
   }
 
-  // ── FOOTER ─────────────────────────────────────────
-  if (y > H - 20) { doc.addPage(); }
-  doc.setFillColor(DARK);
-  doc.rect(0, H - 14, W, 14, 'F');
-  doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
-  doc.setTextColor('#B0CFEA');
-  doc.text('Prepared by Salesforce · Confidential · For Discussion Purposes Only', M, H - 5.5);
-  doc.text('salesforce.com', W - M, H - 5.5, { align:'right' });
+  // Add footers to all pages
+  const totalPages = doc.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) addFooter(p, totalPages);
 
   doc.save('USG-Water-Salesforce-Business-Value.pdf');
 }

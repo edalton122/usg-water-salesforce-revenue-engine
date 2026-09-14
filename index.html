@@ -51,6 +51,22 @@
     }
     .tn-link:hover { color: white; background: rgba(255,255,255,0.08); }
     .tn-link.tn-active { color: white; background: var(--usg-blue); }
+    /* Value Calc special treatment */
+    .tn-link.tn-bvc {
+      color: var(--usg-orange); background: rgba(242,102,65,0.12);
+      border: 1px solid rgba(242,102,65,0.35); border-radius: 7px;
+      position: relative;
+    }
+    .tn-link.tn-bvc::before {
+      content: '⚡'; font-size: 9px; margin-right: 3px;
+    }
+    .tn-link.tn-bvc:hover { background: rgba(242,102,65,0.22); color: #FF8A6A; }
+    .tn-link.tn-bvc.tn-active { background: var(--usg-orange); color: white; border-color: var(--usg-orange); }
+    @keyframes bvcGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(242,102,65,0); }
+      50% { box-shadow: 0 0 8px 2px rgba(242,102,65,0.4); }
+    }
+    .tn-link.tn-bvc { animation: bvcGlow 2.8s ease-in-out infinite; }
     #topnav-cta {
       flex-shrink: 0;
       font-size: 11px; font-weight: 800; letter-spacing: 0.04em;
@@ -395,18 +411,18 @@
     <img src="https://wp.sfdcdigital.com/en-us/wp-content/uploads/sites/4/2024/11/logo-salesforce.svg" alt="Salesforce" style="height:22px;"/>
   </div>
   <div id="topnav-links">
-    <button class="tn-link tn-active" onclick="scrollTo('slide-1')">Overview</button>
-    <button class="tn-link" onclick="scrollTo('slide-2')">Challenge</button>
-    <button class="tn-link" onclick="scrollTo('slide-3')">Platform</button>
-    <button class="tn-link" onclick="scrollTo('slide-4')">Field Engine</button>
-    <button class="tn-link" onclick="scrollTo('slide-5')">Attribution</button>
-    <button class="tn-link" onclick="scrollTo('slide-6')">AI Architecture</button>
-    <button class="tn-link" onclick="scrollTo('slide-7')">Dashboard</button>
-    <button class="tn-link" onclick="scrollTo('slide-bvc')">Value Calc</button>
-    <button class="tn-link" onclick="scrollTo('slide-8')">M&amp;A Portfolio</button>
-    <button class="tn-link" onclick="scrollTo('slide-9')">Path Forward</button>
+    <button class="tn-link tn-active" onclick="navTo('slide-1')">Overview</button>
+    <button class="tn-link" onclick="navTo('slide-2')">Challenge</button>
+    <button class="tn-link" onclick="navTo('slide-3')">Platform</button>
+    <button class="tn-link" onclick="navTo('slide-4')">Field Engine</button>
+    <button class="tn-link" onclick="navTo('slide-5')">Attribution</button>
+    <button class="tn-link" onclick="navTo('slide-6')">AI Architecture</button>
+    <button class="tn-link" onclick="navTo('slide-7')">Dashboard</button>
+    <button class="tn-link tn-bvc" onclick="navTo('slide-bvc')">Value Calc</button>
+    <button class="tn-link" onclick="navTo('slide-8')">M&amp;A Portfolio</button>
+    <button class="tn-link" onclick="navTo('slide-9')">Path Forward</button>
   </div>
-  <button id="topnav-cta" onclick="scrollTo('slide-9')">Schedule Review →</button>
+  <button id="topnav-cta" onclick="navTo('slide-9')">Schedule Review →</button>
 </nav>
 
 <!-- Progress bar -->
@@ -1601,8 +1617,8 @@ SLIDES.forEach((s,i) => {
   sidebar.appendChild(item);
 });
 
-/* ── Topnav scroll helper (avoids conflict with window.scrollTo) ── */
-function scrollTo(id) {
+/* ── Topnav scroll helper ── */
+function navTo(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
@@ -1618,7 +1634,7 @@ function updateNav(){
     const d=document.getElementById(`dot-${i}`);
     d.className='nav-dot'+(i===activeIndex?' active':i<activeIndex?' visited':'');
   });
-  // Sync topnav active state
+  // Sync topnav active state (preserve tn-bvc class on Value Calc button)
   document.querySelectorAll('.tn-link').forEach((btn,i) => {
     btn.classList.toggle('tn-active', i === activeIndex);
   });

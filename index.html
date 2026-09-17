@@ -268,8 +268,8 @@
     .bvc-out-val { font-size:1.45rem; font-weight:900; color:var(--usg-dark); letter-spacing:-0.025em; transition:color 0.3s; line-height:1.1; }
     .bvc-out-sub { font-size:10px; color:#9CA3AF; line-height:1.45; margin-top:2px; }
 
-    /* Total + WEP row */
-    .bvc-bottom { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:stretch; }
+    /* Total bar */
+    .bvc-bottom { display:grid; grid-template-columns:1fr; gap:12px; align-items:stretch; }
     .bvc-total {
       background:linear-gradient(135deg,var(--usg-dark) 0%,#0E4080 100%);
       border-radius:16px; padding:22px 28px;
@@ -277,19 +277,6 @@
     }
     .bvc-total-label { font-size:10px; font-weight:700; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
     .bvc-total-val { font-size:2.2rem; font-weight:900; color:white; letter-spacing:-0.035em; line-height:1; }
-    .bvc-wep-toggle {
-      background:#EFF8FF; border:1px solid #BFDBFE;
-      border-radius:16px; padding:18px 20px; min-width:230px;
-      display:flex; flex-direction:column; justify-content:center; gap:8px; cursor:pointer;
-      transition:background 0.2s;
-    }
-    .bvc-wep-toggle:hover { background:#DBEAFE; }
-    .bvc-wep-top { display:flex; align-items:center; gap:8px; }
-    .bvc-wep-top label { font-size:11px; font-weight:700; color:var(--usg-dark); cursor:pointer; }
-    .bvc-wep-val { font-size:1.1rem; font-weight:900; color:var(--usg-blue); display:none; line-height:1; }
-    .bvc-wep-sub { font-size:9.5px; color:#64748B; display:none; }
-    .bvc-wep-val.visible { display:block; }
-    .bvc-wep-sub.visible { display:block; }
     .bvc-pulse { animation:bvcPulse 0.35s ease; }
     @keyframes bvcPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
@@ -579,9 +566,9 @@
       </div>
 
       <div class="stat-card glass rounded-2xl p-5 flex-1" style="min-width:140px;max-width:200px;">
-        <div class="big-metric" style="color:#D4F5AA;">11</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;">WEP Portfolio Co.</div>
-        <div class="stat-detail" style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px;line-height:1.5;">Already on Salesforce — USG is next in the standard</div>
+        <div class="big-metric" style="color:#D4F5AA;">3</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;">Siloed Platforms</div>
+        <div class="stat-detail" style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px;line-height:1.5;">Oracle Sales Cloud, HubSpot & legacy ERP — zero shared data model</div>
       </div>
 
     </div>
@@ -780,7 +767,7 @@
             <div class="space-y-2">
               <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Tableau blends CRM pipeline, Field Service dispatch, and Snowflake asset data into one governed board view</p></div>
               <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Top 10 renewal risk, regional pipeline velocity, and RFP win/loss — live, not day-old</p></div>
-              <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Plug-and-play M&A integration standard across all 11 Warren Equity portfolio companies</p></div>
+              <div style="display:flex;gap:8px;align-items:start;"><span style="color:white;font-weight:900;flex-shrink:0;">→</span><p style="color:rgba(255,255,255,0.85);font-size:0.82rem;line-height:1.55;">Plug-and-play M&A integration standard built to scale across the Warren Equity portfolio</p></div>
             </div>
             <div style="margin-top:16px;background:rgba(255,255,255,0.2);border-radius:8px;padding:10px;">
               <p style="font-size:0.78rem;color:white;line-height:1.5;">From days-old stitched reports to live board intelligence — instantly.</p>
@@ -1486,14 +1473,6 @@
         </div>
         <svg width="40" height="40" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       </div>
-      <div class="bvc-wep-toggle" onclick="toggleWEP()">
-        <div class="bvc-wep-top">
-          <input type="checkbox" id="wep-check" style="accent-color:var(--usg-blue);width:14px;height:14px;cursor:pointer;" onclick="event.stopPropagation();toggleWEP()"/>
-          <label for="wep-check" style="font-size:11px;font-weight:700;color:var(--usg-dark);cursor:pointer;line-height:1.35;">Scale across all 11 Warren Equity<br/>portfolio companies</label>
-        </div>
-        <div class="bvc-wep-val" id="o-wep">$0</div>
-        <div class="bvc-wep-sub" id="o-wep-sub">combined portfolio value</div>
-      </div>
     </div>
 
     <!-- Breakdown pills -->
@@ -1528,7 +1507,7 @@
 
     <div style="display:flex;flex-direction:column;gap:16px;lg:flex-row;">
       <div class="reveal" style="max-width:580px;margin-bottom:20px;">
-        <p style="color:#64748B;font-size:0.95rem;line-height:1.7;">11 Warren Equity portfolio companies already run on Salesforce. USG Water joining the platform plugs into a <strong style="color:var(--usg-dark);">pre-built M&A integration standard</strong> that the PE firm has operationalized across its entire portfolio — with proven implementation playbooks, cross-portfolio benchmarking, and exit-ready data governance.</p>
+        <p style="color:#64748B;font-size:0.95rem;line-height:1.7;">Warren Equity has prioritized platform standardization across its portfolio. USG Water joining Salesforce positions the organization within a <strong style="color:var(--usg-dark);">scalable M&A integration foundation</strong> — with proven implementation playbooks, cross-portfolio benchmarking potential, and exit-ready data governance built in from day one.</p>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 reveal">
@@ -1575,7 +1554,7 @@
             <div>
               <span class="tag" style="background:rgba(5,150,105,0.15);color:#059669;margin-bottom:4px;display:inline-block;">Next to Join</span>
               <h4 style="font-size:1rem;font-weight:800;color:var(--usg-dark);">USG Water Solutions</h4>
-              <p style="font-size:0.8rem;color:#065F46;line-height:1.5;">Joining the Warren Equity Salesforce standard — gaining access to 11 implementation playbooks, cross-portfolio benchmarks, and an M&A-ready reporting foundation. &lt;90 day onboarding target.</p>
+              <p style="font-size:0.8rem;color:#065F46;line-height:1.5;">Joining the Warren Equity platform strategy — gaining access to proven implementation playbooks, cross-portfolio benchmarks, and an M&A-ready reporting foundation. &lt;90 day onboarding target.</p>
             </div>
           </div>
         </div>
@@ -1837,7 +1816,7 @@ const drawerData={
         <div style="padding:10px;background:#F0F9FF;border-radius:8px;border-left:3px solid #0369A1;"><p style="font-size:0.82rem;font-weight:700;color:#0B2545;margin-bottom:2px;">Zero-Copy Federation</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Snowflake data is accessed in place — no ETL jobs, no data sync, no duplicate storage costs. Claude asset scores and telemetry are live in Salesforce without moving the data.</p></div>
         <div style="padding:10px;background:#F0F9FF;border-radius:8px;border-left:3px solid #72BF44;"><p style="font-size:0.82rem;font-weight:700;color:#0B2545;margin-bottom:2px;">Unified Customer Profiles</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">CRM contacts, asset health records, service history, and renewal risk scores merged into a single governed profile — powering Agentforce and Tableau simultaneously.</p></div>
         <div style="padding:10px;background:#F0F9FF;border-radius:8px;border-left:3px solid #F26641;"><p style="font-size:0.82rem;font-weight:700;color:#0B2545;margin-bottom:2px;">Real-Time Streaming</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Asset telemetry and field data stream in real time — board dashboards and AI signals are always current, not day-old batch reports.</p></div>
-        <div style="padding:10px;background:#F0F9FF;border-radius:8px;border-left:3px solid #7C3AED;"><p style="font-size:0.82rem;font-weight:700;color:#0B2545;margin-bottom:2px;">Governed Data Model</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Single data model across all 11 Warren Equity portfolio companies on Salesforce — plug-and-play M&A integration for newly acquired entities.</p></div>
+        <div style="padding:10px;background:#F0F9FF;border-radius:8px;border-left:3px solid #7C3AED;"><p style="font-size:0.82rem;font-weight:700;color:#0B2545;margin-bottom:2px;">Governed Data Model</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Single data model built to scale across the Warren Equity portfolio — plug-and-play M&A integration for newly acquired entities.</p></div>
       </div>
       <div style="background:linear-gradient(135deg,#0369A1,#38BDF8);border-radius:10px;padding:14px;">
         <p style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-bottom:5px;">PE Board Impact</p>
@@ -1875,7 +1854,7 @@ const drawerData={
         <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-left:3px solid #D97706;"><p style="font-size:0.82rem;font-weight:700;color:#92400E;margin-bottom:2px;">Top 10 Renewal Risk</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">AI-scored renewal risk rankings updated in real time — board can see which municipal accounts need immediate outreach without waiting for a weekly report.</p></div>
         <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-left:3px solid #72BF44;"><p style="font-size:0.82rem;font-weight:700;color:#92400E;margin-bottom:2px;">Regional Pipeline Velocity</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Breakdown of pipeline by region (Southeast, Southwest, Northeast, Midwest, Pacific NW) with QoQ velocity — identifies expansion market performance immediately.</p></div>
         <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-left:3px solid #2491EB;"><p style="font-size:0.82rem;font-weight:700;color:#92400E;margin-bottom:2px;">RFP Win/Loss Metrics</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Win rate, loss reason breakdown, and average bid response time — all automatically populated from Flow-enforced RFP stage transitions with mandatory reason codes.</p></div>
-        <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-left:3px solid #7C3AED;"><p style="font-size:0.82rem;font-weight:700;color:#92400E;margin-bottom:2px;">M&A Integration Standard</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Same Tableau dashboard template deployed across all 11 Warren Equity portfolio companies — newly acquired entities onboard to the standard without rebuilding BI.</p></div>
+        <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-left:3px solid #7C3AED;"><p style="font-size:0.82rem;font-weight:700;color:#92400E;margin-bottom:2px;">M&A Integration Standard</p><p style="font-size:0.78rem;color:#6B7280;line-height:1.5;">Same Tableau dashboard template deployable across the Warren Equity portfolio — newly acquired entities onboard to the standard without rebuilding BI.</p></div>
       </div>
       <div style="background:linear-gradient(135deg,#D97706,#FBBF24);border-radius:10px;padding:14px;">
         <p style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-bottom:5px;">PE Board Impact</p>
@@ -2083,19 +2062,6 @@ function updateGrandTotal() {
     if (el) el.textContent = fmtK(tabTotals[k]);
   }
 
-  // WEP toggle
-  const wepEl  = document.getElementById('o-wep');
-  const wepSub = document.getElementById('o-wep-sub');
-  if (wepEl) wepEl.textContent = fmt(wepTotal);
-  const checked = document.getElementById('wep-check').checked;
-  if (wepEl)  wepEl.classList.toggle('visible', checked);
-  if (wepSub) wepSub.classList.toggle('visible', checked);
-}
-
-function toggleWEP() {
-  const chk = document.getElementById('wep-check');
-  chk.checked = !chk.checked;
-  updateGrandTotal();
 }
 
 // Initialize on load
@@ -2134,7 +2100,6 @@ function generateBvcPDF() {
   const fmtKN  = n => n>=1e6 ? '$'+(n/1e6).toFixed(1)+'M' : n>=1e3 ? '$'+Math.round(n/1e3)+'K' : fmtN(n);
   const now    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   const g      = id => document.getElementById(id)?.textContent?.trim() || '—';
-  const wep    = document.getElementById('wep-check').checked;
 
   // Parse a formatted money string back to a number for bar sizing
   const parseMoney = s => {
@@ -2202,16 +2167,6 @@ function generateBvcPDF() {
   doc.setFont('helvetica','bold'); doc.setFontSize(30);
   doc.setTextColor(C.dark);
   doc.text(fmtN(total), M+6, y+25);
-
-  if (wep) {
-    doc.setFillColor(C.orange);
-    doc.roundedRect(W-M-58, y+6, 58, 20, 3, 3, 'F');
-    doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
-    doc.setTextColor('#FFFFFF');
-    doc.text('WARREN EQUITY PORTFOLIO ×11', W-M-29, y+13, {align:'center'});
-    doc.setFontSize(11);
-    doc.text(fmtKN(total*11), W-M-29, y+22, {align:'center'});
-  }
 
   y += 40;
 
@@ -2491,13 +2446,13 @@ function generateBvcPDF() {
    ══════════════════════════════════════════════════════════ */
 
 const LISTEN_SCRIPT = `
-USG Water Solutions operates across 48 states with over 130 field crews maintaining critical water infrastructure for communities throughout the United States. Recently acquired by Warren Equity Partners — a private equity firm with a portfolio of 11 companies, all standardized on Salesforce — USG Water is at a pivotal moment.
+USG Water Solutions operates across 48 states with over 130 field crews maintaining critical water infrastructure for communities throughout the United States. Recently acquired by Warren Equity Partners, a growth-focused private equity firm, USG Water is at a pivotal moment.
 
 The challenge is real and urgent. Today, USG Water runs on three disconnected platforms: Oracle Sales Cloud, HubSpot, and a 25-year-old Oracle ERP. Every time a field technician discovers a cross-sell opportunity on a job site, that insight disappears. It never becomes a tracked opportunity. It never becomes revenue. Meanwhile, the marketing team runs over 150 events annually with zero closed-loop attribution — no way to tie a campaign touchpoint to a closed deal. And the board at Warren Equity is flying blind, making portfolio decisions without live revenue intelligence.
 
 This is precisely what Salesforce was built to solve.
 
-When USG Water unifies on Salesforce, 130 field crews become active revenue channels. Every site visit, every asset observation, every cross-sell signal flows automatically into a tracked opportunity. HubSpot stays — it connects natively to Salesforce, and every event touchpoint maps back to closed revenue. Agentforce, powered by Claude AI, analyzes asset imagery and condition data to predict renovations before they become costly emergencies. And Warren Equity gets a live board dashboard showing real-time pipeline, renewal risk, and win-rate velocity across all 11 portfolio companies.
+When USG Water unifies on Salesforce, 130 field crews become active revenue channels. Every site visit, every asset observation, every cross-sell signal flows automatically into a tracked opportunity. HubSpot stays — it connects natively to Salesforce, and every event touchpoint maps back to closed revenue. Agentforce, powered by Claude AI, analyzes asset imagery and condition data to predict renovations before they become costly emergencies. And Warren Equity gets a live board dashboard showing real-time pipeline, renewal risk, and win-rate velocity — the kind of live intelligence that PE firms need to make confident portfolio decisions.
 
 This microsite walks you through exactly how that works. You'll see the four revenue leaks USG Water faces today, the six-product Salesforce platform designed to close them, the AI architecture that turns asset data into margin, and a clear 90-day path to get there.
 

@@ -76,6 +76,24 @@
       transition: opacity 0.2s;
     }
     #topnav-cta:hover { opacity: 0.88; }
+    #topnav-guide {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      color: #C5E043; text-decoration: none; white-space: nowrap;
+      padding: 6px 12px; border-radius: 7px; border: 1px solid rgba(197,224,67,0.45);
+      background: rgba(197,224,67,0.08); transition: all 0.2s;
+    }
+    #topnav-guide:hover { background: #C5E043; color: #162239; border-color: #C5E043; }
+    #topnav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    @media (max-width: 1560px) {
+      #topnav { padding: 0 18px; }
+      .tn-link { padding: 6px 7px; letter-spacing: 0.02em; }
+    }
+    @media (max-width: 1400px) {
+      .tn-link { font-size: 10px; padding: 6px 5px; letter-spacing: 0.01em; }
+      #topnav-guide, #topnav-cta { padding: 6px 9px; font-size: 10px; }
+      #topnav-logo img { height: 22px; }
+    }
 
     /* ── Progress bar ── */
     #progress-bar {
@@ -474,7 +492,10 @@
     <button class="tn-link" onclick="navTo('slide-8')">M&amp;A Portfolio</button>
     <button class="tn-link" onclick="navTo('slide-9')">Path Forward</button>
   </div>
-  <button id="topnav-cta" onclick="window.open('team.html','_blank')">Schedule Review →</button>
+  <div id="topnav-right">
+    <a id="topnav-guide" href="https://edalton122.github.io/usg-water-salesforce-decision-guide/">Decision Guide →</a>
+    <button id="topnav-cta" onclick="window.open('team.html','_blank')">Schedule Review →</button>
+  </div>
 </nav>
 
 <!-- Progress bar -->
